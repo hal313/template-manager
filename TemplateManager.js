@@ -96,7 +96,7 @@ var TemplateManager = function(defaultResolverMap) {
                 }
 
                 // Only replace if the replacement is defined
-                if (replacement) {
+                if (0 !== (replacement + '').length) {
                     processedTemplateString = processedTemplateString.replace(regex, replacement);
                 }
             });
