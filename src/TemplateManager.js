@@ -117,7 +117,7 @@ var TemplateManager = function(defaultResolverMap) {
 
         // If the template is not found in the cache, return null
         if (!rawTemplate) {
-            console.error('Template', name, 'does not exist');
+            console.error('Template \'%s\' does not exist', name);
             rawTemplate = null;
         }
 
