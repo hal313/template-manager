@@ -1,6 +1,10 @@
+/*global module:true */
+
+// TODO: Implement code coverage
+// TODO: release should run headless test (phantomJS?)
+
 /**
  * @author: jghidiu
- * Email: jghidiu@paychex.com
  * Date: 2014-12-08
  */
 module.exports = function(grunt) {
@@ -11,13 +15,13 @@ module.exports = function(grunt) {
             options: {
                 files: ['bower.json', 'package.json'],
                 updateConfigs: [],
-                commit: false, // true
+                commit: false,
                 commitMessage: '-Tagged for release v%VERSION%',
                 commitFiles: ['bower.json', 'package.json'],
                 createTag: false,
                 tagName: '%VERSION%',
                 tagMessage: 'Version %VERSION%',
-                push: false, // true
+                push: false,
                 pushTo: 'upstream',
                 gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
                 globalReplace: false
@@ -25,10 +29,14 @@ module.exports = function(grunt) {
             // TODO: Get build and dist  working (build will not tag, dist will tag, release will tag and commit)
         },
         open: {
+            source: {
+                path: 'test/source.html'
+            },
             dist: {
-                // TODO: Set the watch URL
-                // path: 'http://localhost:35729/'
-                path: 'index.html'
+                path: 'test/dist.html'
+            },
+            distmin: {
+                path: 'test/dist-min.html'
             }
         },
         watch: {
@@ -39,8 +47,6 @@ module.exports = function(grunt) {
         },
         uglify: {
             options: {
-                // TODO: Put the banner in the source, filter on copy to dest, use dest for source to minimize, add banner
-//                banner: '/*! <%= pkg.name %*/',
                 sourceMap: true
             },
             dist: {
@@ -72,11 +78,8 @@ module.exports = function(grunt) {
 
     });
 
-    // TODO: release should run test (phantom?)
-    // TODO: jshint in build/dist
-    // TODO: Code coverage
 
-    // Register tasks.
+    // Load NPM tasks
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-contrib-watch');
@@ -84,18 +87,20 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-copy');
 
-    // TODO: Does not work as intended
-    grunt.registerTask('build', ['bump']);
-    // grunt.registerTask('dist', ['bump']);
-    grunt.registerTask('dist', ['build', 'copy:dist', 'uglify:dist', 'jshint:dist']);
-
-    grunt.registerTask('test', ['open']);
+    // Register tasks
+    grunt.registerTask('build', []);
+    grunt.registerTask('dist', ['build', 'bump', 'copy:dist', 'uglify:dist', 'jshint:dist']);
+    grunt.registerTask('release', ['build', 'copy:dist', 'uglify:dist', 'jshint:dist', 'bump:minor']);
+    //
+    // Test tasks
+    //
+    // Test the source code
+    grunt.registerTask('test', ['open:source', 'watch']);
+    // Test the code in dist
     grunt.registerTask('test-dist', ['dist', 'open:dist', 'watch']);
-    grunt.registerTask('test-build', ['open', 'watch']);
-
-    //    grunt.registerTask('dist', ['bump:dist']);
-    //    grunt.registerTask('dist', ['bump:release']);
+    // Test the minified file
+    grunt.registerTask('test-min', ['dist', 'open:distmin', 'watch']);
 
     // Default task.
-    grunt.registerTask('default', 'build');
+    grunt.registerTask('default', 'test');
 };

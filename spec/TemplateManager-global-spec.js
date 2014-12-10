@@ -5,7 +5,6 @@
 
 /**
  * @author: jghidiu
- * Email: jghidiu@solutechnology.com
  * Date: 2014-12-08
  */
 
