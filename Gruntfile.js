@@ -59,6 +59,7 @@ module.exports = function(grunt) {
             options: {
                 jshintrc: '.jshintrc'
             },
+            source: ['src/TemplateManager.js'],
             // Only lint the unmin file
             dist: ['dist/TemplateManager.js']
         },
@@ -74,6 +75,24 @@ module.exports = function(grunt) {
                     }
                 ]
             }
+        },
+        mocha: {
+            options: {
+                run: true,
+                reporter: 'Spec'
+            },
+            all: {
+                src: ['test/**/*.*']
+            },
+            source: {
+                src: ['test/source.html']
+            },
+            dist: {
+                src: ['test/dist.html']
+            },
+            distmin: {
+                src: ['test/dist-min.html']
+            }
         }
 
     });
@@ -81,26 +100,41 @@ module.exports = function(grunt) {
 
     // Load NPM tasks
     grunt.loadNpmTasks('grunt-bump');
+    grunt.loadNpmTasks('grunt-mocha');
     grunt.loadNpmTasks('grunt-open');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     // Register tasks
-    grunt.registerTask('build', []);
-    grunt.registerTask('dist', ['build', 'bump', 'copy:dist', 'uglify:dist', 'jshint:dist']);
-    grunt.registerTask('release', ['dist', 'bump:minor']);
+    grunt.registerTask('build', ['jshint:source']);
+    grunt.registerTask('build-dist', ['build', 'copy:dist', 'uglify:dist', 'jshint:dist']);
+    grunt.registerTask('dist', ['build-dist', 'mocha:all', 'bump:patch']);
+    grunt.registerTask('release-patch', ['dist'  /*TODO: add package files, commit, tag, push*/]);
+    grunt.registerTask('release-minor', ['dist', /*TODO: add package files, commit, tag */ 'bump:minor' /*TODO: add package files, commit, push*/ ]);
+    grunt.registerTask('release-major', ['dist', /*TODO: add package files, commit, tag */ 'bump:major' /*TODO: add package files, commit, push*/ ]);
     //
     // Test tasks
     //
     // Test the source code
     grunt.registerTask('test', ['open:source', 'watch']);
     // Test the code in dist
-    grunt.registerTask('test-dist', ['dist', 'open:dist', 'watch']);
-    // Test the minified file
-    grunt.registerTask('test-dist-min', ['dist', 'open:distmin', 'watch']);
+    grunt.registerTask('test-dist', ['build-dist', 'open:dist', 'watch']);
+    // Test the minified dist files
+    grunt.registerTask('test-dist-min', ['build-dist', 'open:distmin', 'watch']);
+    //
+    // Headless test tasks
+    //
+    // Test the source code
+    grunt.registerTask('test-headless', ['mocha:source']);
+    // Test the code in dist
+    grunt.registerTask('test-headless-dist', ['build-dist', 'mocha:dist']);
+    // Test the minified dist files
+    grunt.registerTask('test-headless-dist-min', ['build-dist', 'mocha:distmin']);
+
+    grunt.registerTask('test-headless-all', ['mocha:all']);
 
     // Default task.
-    grunt.registerTask('default', 'test');
+    grunt.registerTask('default', 'build');
 };
