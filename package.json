@@ -1,6 +1,6 @@
 {
     "name": "template-manager",
-    "version": "0.0.40",
+    "version": "1.0.15",
     "description": "A JavaScript library to manage templates",
     "scripts": {
         "test": "grunt test"
