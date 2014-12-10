@@ -1,30 +1,28 @@
 {
-    "name": "template-manager",
-    "version": "1.1.0",
-    "homepage": "https://github.com/hal313/template-manager",
-    "authors": [
-        "john-github@rmdashrf.org"
-    ],
-    "description": "A JavaScript library to manage templates",
-    "main": "dist/TemplateManager.min.js",
-    "moduleType": [
-        "globals"
-    ],
-    "keywords": [
-        "javascript",
-        "template"
-    ],
-    "license": "MIT",
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components"
-    ],
-    "dependencies": {
-        "jquery": "~2.1.1"
-    },
-    "devDependencies": {
-        "chai": "~1.8.0",
-        "mocha": "~1.14.0"
-    }
+  "name": "template-manager",
+  "version": "1.0.14",
+  "homepage": "https://github.com/hal313/template-manager",
+  "authors": [
+    "john-github@rmdashrf.org"
+  ],
+  "description": "A JavaScript library to manage templates",
+  "main": "TemplateManager.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "javascript",
+    "template"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1"
+  }
 }
