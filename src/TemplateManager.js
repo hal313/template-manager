@@ -34,10 +34,10 @@
         }
     }
 
-})(this, function(defaultResolverMap) {
+})(this, function() {
     'use strict';
 
-    return function() {
+    return function(defaultResolverMap) {
 
         // The template cache
         var _templateCache = [];

@@ -2,7 +2,7 @@
 
 // TODO: Implement code coverage
 // TODO: release should run headless test (phantomJS?)
-// TODO: Get build and dist working (build should not bum, dist should bump and tag and commit, release should bump, tag, commit and push?)
+// TODO: Get build/dist/release working with bump (build should not tag, dist should bump, tag and commit, release should bump:minor, tag and commit (and push?))
 
 /**
  * @author: jghidiu
