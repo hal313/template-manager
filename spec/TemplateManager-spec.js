@@ -1,6 +1,13 @@
+/*global beforeEach,describe,it: true*/
+/*global TemplateManager: true*/
+
+// TODO: Test TemplateManager functionality (add(), remove(), load(), get())
+// TODO: Test compiled template functionality (raw())
+// TODO: Test default resolverMap
+
 /**
  * @author: jghidiu
- * Email: jghidiu@paychex.com
+ * Email: jghidiu@solutechnology.com
  * Date: 2014-12-08
  */
 
@@ -8,72 +15,242 @@
     'use strict';
 
     var _templateNames = {
-        'nullTemplate': null,
-        'emptyTemplate': '',
-        'regularTemplate': 'this is {a} regular template'
+        nullName: null,
+        emptyName: '',
+        regularName: 'regular'
+    };
+
+    var _templateContent = {
+        nullContent: null,
+        emptyContent: '',
+        regularContent: 'this is ${resolver} regular template'
+    };
+
+    var _resolutions = {
+        regular: {
+            simple: {
+                template: {
+                    templateName: 'template',
+                    templateContent: 'this is ${a} simple resolver'
+                },
+                resolverMaps: {
+                    withConstants: [{regex: 'a', replacement: 'a'}],
+                    withFunctions: [{regex: 'a', replacement: function() {return 'a';}}]
+                },
+                compiled: {
+                    content: 'this is a simple resolver'
+                }
+            },
+            multiple: {
+                template: {
+                    templateName: 'template',
+                    templateContent: 'this is ${a} ${simple} resolver'
+                },
+                resolverMaps: {
+                    withConstants: [{regex: 'a', replacement: 'a'}, {regex: 'simple', replacement: 'simple'}],
+                    withFunctions: [{regex: 'a', replacement: function() {return 'a';}}, {regex: 'simple', replacement: function() {return 'simple';}}]
+                },
+                compiled: {
+                    content: 'this is a simple resolver'
+                }
+            },
+            embedded: {
+                template: {
+                    templateName: 'template',
+                    templateContent: 'this is ${a${n}} embedded resolver'
+                },
+                resolverMaps: {
+                    withConstants: [{regex: 'an', replacement: 'an'}, {regex: 'n', replacement: 'n'}],
+                    withFunctions: [{regex: 'an', replacement: function() {return 'an';}}, {regex: 'n', replacement: function() {return 'n';}}]
+                },
+                compiled: {
+                    content: 'this is an embedded resolver'
+                }
+            }
+        }
     };
 
     beforeEach(function() {
         this.templateManager = new TemplateManager();
     });
 
-    describe('Lifecycle', function() {
-
-        it('should exist', function () {
-            expect(TemplateManager).to.be.a('function');
-        });
-
-    });
-
     describe('API', function() {
 
-        it('should have a .add() function', function () {
-            expect(this.templateManager.add).to.be.a('function');
+        describe('TemplateManager', function() {
+
+            it('should have a .add() function', function () {
+                expect(this.templateManager.add).to.be.a('function');
+            });
+
+            it('should have a .get() function', function () {
+                expect(this.templateManager.get).to.be.a('function');
+            });
+
+            it('should have a .load() function', function () {
+                expect(this.templateManager.load).to.be.a('function');
+            });
+
+            it('should have a .remove() function', function () {
+                expect(this.templateManager.remove).to.be.a('function');
+            });
+
         });
 
-        it('should have a .get() function', function () {
-            expect(this.templateManager.get).to.be.a('function');
-        });
-
-        it('should have a .load() function', function () {
-            expect(this.templateManager.load).to.be.a('function');
-        });
-
-        it('should have a .remove() function', function () {
-            expect(this.templateManager.remove).to.be.a('function');
-        });
-
-        // TODO: Check params passed in
-
-        describe('Compiled Template API', function() {
+        describe('Compiled Template', function() {
 
             beforeEach(function() {
-                this.emptyTemplate = this.templateManager.get('non template');
+                this.regularTemplate = this.templateManager.add(_templateNames.regularName, _templateContent.regularContent);
             });
 
             it('should have a .raw() function', function() {
-                expect(this.emptyTemplate.raw).to.be.a('function');
+                expect(this.regularTemplate.raw).to.be.a('function');
             });
 
             it('should have a .process() function', function() {
-                expect(this.emptyTemplate.process).to.be.a('function');
+                expect(this.regularTemplate.process).to.be.a('function');
             });
 
-            // TODO: Check params passed in, null, etc, template functionality, etc
 
         });
 
     });
 
-    describe('Template Cache', function() {
+    describe('Compiled Templates', function() {
 
-        it('should load manually', function() {
-            var compiledTemplate = this.templateManager.get('someTemplate');
-            //templateManager.add('test', '{test}');
-            //var compiledTemplate = templateManager.get('test');
-            //console.log('compiledTemplate', compiledTemplate.raw());
-            expect(compiledTemplate.raw()).to.be.null;
-            //console.log(compiledTemplate.process());
+        describe('Null Template', function() {
+
+            beforeEach(function() {
+                this.nullTemplate = this.templateManager.add(_templateNames.nullName, _templateNames.regularName);
+            });
+
+            it('should return a compiled template when templateManager.get(null) is invoked', function() {
+                expect(this.nullTemplate).to.be.a('object');
+            });
+
+            it('should return a compiled template with raw() when templateManager.get(null) is invoked', function() {
+                expect(this.nullTemplate.raw).to.be.a('function');
+            });
+
+            it('should return a compiled template with process() when templateManager.get(null) is invoked', function() {
+                expect(this.nullTemplate.process).to.be.a('function');
+            });
+
+            it('should return the empty string when raw() is called on templateManager.get(null)', function() {
+                expect(this.nullTemplate.raw()).to.equal('');
+            });
+
+            it('should return the empty string when process() is called on templateManager.get(null)', function() {
+                expect(this.nullTemplate.process()).to.equal('');
+            });
+
+        });
+
+        describe('Empty Template', function() {
+
+            beforeEach(function() {
+                this.emptyTemplate = this.templateManager.add(_templateNames.emptyName, _templateContent.emptyContent);
+            });
+
+            it('should return a compiled template when templateManager.get(\'\') is invoked', function() {
+                expect(this.emptyTemplate).to.be.a('object');
+            });
+
+            it('should return a compiled template with raw() when templateManager.get(\'\') is invoked', function() {
+                expect(this.emptyTemplate.raw).to.be.a('function');
+            });
+
+            it('should return a compiled template with process() when templateManager.get(\'\') is invoked', function() {
+                expect(this.emptyTemplate.process).to.be.a('function');
+            });
+
+            it('should return the empty string when raw() is called on templateManager.get(\'\')', function() {
+                expect(this.emptyTemplate.raw()).to.equal('');
+            });
+
+            it('should return the empty string when process() is called on templateManager.get(\'\')', function() {
+                expect(this.emptyTemplate.process()).to.equal('');
+            });
+
+        });
+
+        describe('Regular Template', function() {
+
+            beforeEach(function() {
+                this.regularTemplate = this.templateManager.add(_templateNames.regularName, _templateContent.regularContent);
+            });
+
+            it('should return a compiled template when templateManager.get(' + _templateNames.regularName + ') is invoked', function() {
+                expect(this.regularTemplate).to.be.a('object');
+            });
+
+            it('should return a compiled template with raw() when templateManager.get(' + _templateNames.regularName + ') is invoked', function() {
+                expect(this.regularTemplate.raw).to.be.a('function');
+            });
+
+            it('should return a compiled template with process() when templateManager.get(' + _templateNames.regularName + ') is invoked', function() {
+                expect(this.regularTemplate.process).to.be.a('function');
+            });
+
+            it('should return the valid content when raw() is called on templateManager.get(' + _templateNames.regularName + ')', function() {
+                expect(this.regularTemplate.raw()).to.equal(_templateContent.regularContent);
+            });
+
+            it('should return the valid content when process() is called on templateManager.get(' + _templateNames.regularName + ')', function() {
+                expect(this.regularTemplate.process()).to.equal(_templateContent.regularContent);
+            });
+
+        });
+
+    });
+
+    describe('Template Processing Functionality', function() {
+
+        describe('Simple Resolvers', function() {
+
+            beforeEach(function() {
+                this.template = this.templateManager.add(_resolutions.regular.simple.template.templateName, _resolutions.regular.simple.template.templateContent);
+            });
+
+            it('should process with a constant', function() {
+                expect(this.template.process(_resolutions.regular.simple.resolverMaps.withConstants)).to.equal(_resolutions.regular.simple.compiled.content);
+            });
+
+            it('should process with a function', function() {
+                expect(this.template.process(_resolutions.regular.simple.resolverMaps.withFunctions)).to.equal(_resolutions.regular.simple.compiled.content);
+            });
+
+        });
+
+        describe('Multiple Resolvers', function() {
+
+            beforeEach(function() {
+                this.template = this.templateManager.add(_resolutions.regular.multiple.template.templateName, _resolutions.regular.multiple.template.templateContent);
+            });
+
+            it('should process with constants', function() {
+                expect(this.template.process(_resolutions.regular.multiple.resolverMaps.withConstants)).to.equal(_resolutions.regular.multiple.compiled.content);
+            });
+
+            it('should process with functions', function() {
+                expect(this.template.process(_resolutions.regular.multiple.resolverMaps.withFunctions)).to.equal(_resolutions.regular.multiple.compiled.content);
+            });
+
+        });
+
+        describe('Embedded Resolvers', function() {
+
+            beforeEach(function() {
+                this.template = this.templateManager.add(_resolutions.regular.embedded.template.templateName, _resolutions.regular.embedded.template.templateContent);
+            });
+
+            it('should process with embedded an constant', function() {
+                expect(this.template.process(_resolutions.regular.embedded.resolverMaps.withConstants)).to.equal(_resolutions.regular.embedded.compiled.content);
+            });
+
+            it('should process with an embedded function', function() {
+                expect(this.template.process(_resolutions.regular.embedded.resolverMaps.withFunctions)).to.equal(_resolutions.regular.embedded.compiled.content);
+            });
+
         });
 
     });

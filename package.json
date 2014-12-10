@@ -1,6 +1,6 @@
 {
   "name": "template-manager",
-  "version": "0.0.18",
+  "version": "0.0.36",
   "description": "A JavaScript library to manage templates",
   "scripts": {
     "test": "grunt test"
@@ -13,6 +13,8 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-bump": "0.0.16",
     "grunt-open": "^0.2.3",
-    "grunt-contrib-uglify": "^0.6.0"
+    "grunt-contrib-uglify": "^0.6.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-copy": "^0.7.0"
   }
 }
