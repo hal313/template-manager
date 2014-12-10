@@ -43,7 +43,7 @@ module.exports = function(grunt) {
             options: {
                 livereload: true
             },
-            files: ['src/**/*.*', 'spec/**/*.*', 'index.html', 'Gruntfile.js']
+            files: ['src/**/*.*', 'spec/**/*.*', 'test/**/*.*', 'Gruntfile.js']
         },
         uglify: {
             options: {
