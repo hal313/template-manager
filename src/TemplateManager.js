@@ -34,7 +34,7 @@
         }
     }
 
-})(this, function(defaultResolverMap) {
+})(this, function() {
     'use strict';
 
     return function(defaultResolverMap) {
