@@ -37,7 +37,7 @@
 })(this, function(defaultResolverMap) {
     'use strict';
 
-    return function() {
+    return function(defaultResolverMap) {
 
         // The template cache
         var _templateCache = [];
