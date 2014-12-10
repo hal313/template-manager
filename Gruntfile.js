@@ -90,7 +90,7 @@ module.exports = function(grunt) {
     // Register tasks
     grunt.registerTask('build', []);
     grunt.registerTask('dist', ['build', 'bump', 'copy:dist', 'uglify:dist', 'jshint:dist']);
-    grunt.registerTask('release', ['build', 'copy:dist', 'uglify:dist', 'jshint:dist', 'bump:minor']);
+    grunt.registerTask('release', ['dist', 'bump:minor']);
     //
     // Test tasks
     //
@@ -99,7 +99,7 @@ module.exports = function(grunt) {
     // Test the code in dist
     grunt.registerTask('test-dist', ['dist', 'open:dist', 'watch']);
     // Test the minified file
-    grunt.registerTask('test-min', ['dist', 'open:distmin', 'watch']);
+    grunt.registerTask('test-dist-min', ['dist', 'open:distmin', 'watch']);
 
     // Default task.
     grunt.registerTask('default', 'test');
