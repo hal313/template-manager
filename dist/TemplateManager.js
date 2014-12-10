@@ -49,10 +49,14 @@
             return _templateCache[name];
         };
 
-        var _add = function(name, template) {
+        var _doAdd = function(name, template) {
             if (name) {
                 _templateCache[name] = template;
             }
+        };
+
+        var _add = function(name, template) {
+            _doAdd(name, template);
             return _get(name);
         };
 
@@ -97,7 +101,7 @@
         var _processLoop = function(template, resolverMap) {
             var processedTemplateString = template;
 
-            // Only process if there are resolvers!
+            // TODO: Remove the check for Only process if there are resolvers!
             if (resolverMap.length) {
                 jQuery.each(resolverMap, function(index, resolver) {
                     // TODO: Regex caching?
@@ -149,6 +153,9 @@
                     _resolverMap.push(resolver);
                 });
             }
+
+            // TODO: Only process if there are resolvers!
+
 
             // Loop through until no more resolutions take place
             while (processedTemplateString !== (processedLoopResult = _processLoop(processedTemplateString, _resolverMap))) {
