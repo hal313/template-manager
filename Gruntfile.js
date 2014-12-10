@@ -2,6 +2,7 @@
 
 // TODO: Implement code coverage
 // TODO: release should run headless test (phantomJS?)
+// TODO: Get build and dist working (build should not bum, dist should bump and tag and commit, release should bump, tag, commit and push?)
 
 /**
  * @author: jghidiu
@@ -26,7 +27,6 @@ module.exports = function(grunt) {
                 gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
                 globalReplace: false
             }
-            // TODO: Get build and dist  working (build will not tag, dist will tag, release will tag and commit)
         },
         open: {
             source: {
