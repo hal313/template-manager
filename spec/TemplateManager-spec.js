@@ -4,6 +4,7 @@
 // TODO: Test TemplateManager functionality (add(), remove(), load(), get())
 // TODO: Test compiled template functionality (raw())
 // TODO: Test default resolverMap
+// TODO: Test getting scripts from the web page
 
 /**
  * @author: jghidiu
