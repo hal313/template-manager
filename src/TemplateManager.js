@@ -1,7 +1,6 @@
-// TODO: Use logger instead of console
-// TODO: Allow escape
-// TODO: ${} instead of {}
+// TODO: Allow escape (this will have to be figured out in the regular expression)
 // TODO: jsdoc
+// TODO: .add() should take in an optional third argument (resolver map)
 
 (function(root, factory) {
     'use strict';
@@ -37,7 +36,25 @@
 })(this, function() {
     'use strict';
 
-    return function(defaultResolverMap) {
+    // This is a regex cache for all of the instances of TemplateManager (like a private static member)
+    var _getRegex = function(regex) {
+        // Memoize the cache
+        if (!_getRegex.cache) {
+            _getRegex.cache = {};
+        }
+
+        if (!_getRegex.cache[regex]) {
+            _getRegex.cache[regex] = new RegExp(regex, 'gi');
+        }
+
+        return _getRegex.cache[regex];
+    };
+
+    var TemplateManager = function(defaultResolverMap) {
+
+        if (!(this instanceof TemplateManager)) {
+            return new TemplateManager(defaultResolverMap);
+        }
 
         // The template cache
         var _templateCache = [];
@@ -45,18 +62,19 @@
         // Flag to determine if the templates have been loaded from the HTML page
         var _hasLoaded = false;
 
+
         var _find = function(name) {
             return _templateCache[name];
         };
 
-        var _doAdd = function(name, template) {
+        var _addToCache = function(name, template) {
             if (name) {
                 _templateCache[name] = template;
             }
         };
 
         var _add = function(name, template) {
-            _doAdd(name, template);
+            _addToCache(name, template);
             return _get(name);
         };
 
@@ -78,7 +96,7 @@
 
                     if (name.length) {
                         // Add to the cache
-                        _add(name, content);
+                        _addToCache(name, content);
                     } else {
                         // Output warning (no name)
                         console.warn('Template has no name');
@@ -101,30 +119,27 @@
         var _processLoop = function(template, resolverMap) {
             var processedTemplateString = template;
 
-            // TODO: Remove the check for Only process if there are resolvers!
-            if (resolverMap.length) {
-                jQuery.each(resolverMap, function(index, resolver) {
-                    // TODO: Regex caching?
-                    var regex = new RegExp('\\${' + resolver.regex + '}', 'gi');
-                    var replacement;
+            jQuery.each(resolverMap, function(index, resolver) {
+//                var regex = new RegExp('\\${' + resolver.regex + '}', 'gi');
+                var regex = _getRegex('\\${' + resolver.regex + '}');
+                var replacement;
 
-                    // We allow functions for the replacement!
-                    if (jQuery.isFunction(resolver.replacement)) {
-                        try {
-                            replacement = resolver.replacement();
-                        } catch(error) {
-                            console.error('Error while calculating replacement for', resolver.regex, error);
-                        }
-                    } else {
-                        replacement = resolver.replacement;
+                // We allow functions for the replacement!
+                if (jQuery.isFunction(resolver.replacement)) {
+                    try {
+                        replacement = resolver.replacement();
+                    } catch(error) {
+                        console.error('Error while calculating replacement for', resolver.regex, error);
                     }
+                } else {
+                    replacement = resolver.replacement;
+                }
 
-                    // Only replace if the replacement is defined
-                    if (replacement) {
-                        processedTemplateString = processedTemplateString.replace(regex, replacement);
-                    }
-                });
-            }
+                // Only replace if the replacement is defined
+                if (replacement) {
+                    processedTemplateString = processedTemplateString.replace(regex, replacement);
+                }
+            });
 
             return processedTemplateString;
         };
@@ -154,12 +169,12 @@
                 });
             }
 
-            // TODO: Only process if there are resolvers!
-
-
-            // Loop through until no more resolutions take place
-            while (processedTemplateString !== (processedLoopResult = _processLoop(processedTemplateString, _resolverMap))) {
-                processedTemplateString = processedLoopResult;
+            // Only process if there are resolvers!
+            if (_resolverMap.length) {
+                // Loop through until no more resolutions take place
+                while (processedTemplateString !== (processedLoopResult = _processLoop(processedTemplateString, _resolverMap))) {
+                    processedTemplateString = processedLoopResult;
+                }
             }
 
             return processedTemplateString;
@@ -199,4 +214,5 @@
 
     };
 
+    return TemplateManager;
 });

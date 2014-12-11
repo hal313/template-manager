@@ -203,6 +203,18 @@
 
     });
 
+    describe('Inline loading', function() {
+
+        it('should load scripts from the HTML page', function() {
+            var embeddedTemplateName = 'test-template';
+            var embeddedTemplateContent = 'This is a template';
+            expect(this.templateManager.get(embeddedTemplateName).raw()).to.equal(embeddedTemplateContent);
+
+            console.log(this.templateManager.get('t').raw());
+        });
+
+    });
+
     describe('Template Processing Functionality', function() {
 
         describe('Simple Resolvers', function() {
@@ -221,6 +233,28 @@
 
         });
 
+        describe('Simple Resolvers With Default Resolvers', function() {
+
+            it('should process using default resolvers with a constant', function() {
+                var defaultResolverMap = {};
+                defaultResolverMap[_resolutions.regular.simple.template.templateName] = [{regex: 'a', replacement: 'a'}];
+
+                this.templateManager = new TemplateManager(defaultResolverMap);
+                this.template = this.templateManager.add(_resolutions.regular.simple.template.templateName, _resolutions.regular.simple.template.templateContent);
+                expect(this.template.process()).to.equal(_resolutions.regular.simple.compiled.content);
+            });
+
+            it('should process using default resolvers with a function', function() {
+                var defaultResolverMap = {};
+                defaultResolverMap[_resolutions.regular.simple.template.templateName] = [{regex: 'a', replacement: function() {return 'a';}}];
+
+                this.templateManager = new TemplateManager(defaultResolverMap);
+                this.template = this.templateManager.add(_resolutions.regular.simple.template.templateName, _resolutions.regular.simple.template.templateContent);
+                expect(this.template.process()).to.equal(_resolutions.regular.simple.compiled.content);
+            });
+
+        });
+
         describe('Multiple Resolvers', function() {
 
             beforeEach(function() {
@@ -233,6 +267,28 @@
 
             it('should process with functions', function() {
                 expect(this.template.process(_resolutions.regular.multiple.resolverMaps.withFunctions)).to.equal(_resolutions.regular.multiple.compiled.content);
+            });
+
+        });
+
+        describe('Multiple Resolvers With Default Resolvers', function() {
+
+            it('should process using default resolvers with constants', function() {
+                var defaultResolverMap = {};
+                defaultResolverMap[_resolutions.regular.multiple.template.templateName] = [{regex: 'a', replacement: 'a'}, {regex: 'simple', replacement: 'simple'}];
+
+                this.templateManager = new TemplateManager(defaultResolverMap);
+                this.template = this.templateManager.add(_resolutions.regular.multiple.template.templateName, _resolutions.regular.multiple.template.templateContent);
+                expect(this.template.process()).to.equal(_resolutions.regular.multiple.compiled.content);
+            });
+
+            it('should process using default resolvers with functions', function() {
+                var defaultResolverMap = {};
+                defaultResolverMap[_resolutions.regular.multiple.template.templateName] = [{regex: 'a', replacement: function() {return 'a';}}, {regex: 'simple', replacement: function() {return 'simple';}}];
+
+                this.templateManager = new TemplateManager(defaultResolverMap);
+                this.template = this.templateManager.add(_resolutions.regular.multiple.template.templateName, _resolutions.regular.multiple.template.templateContent);
+                expect(this.template.process()).to.equal(_resolutions.regular.multiple.compiled.content);
             });
 
         });
