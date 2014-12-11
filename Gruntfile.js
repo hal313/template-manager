@@ -111,9 +111,9 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['jshint:source']);
     grunt.registerTask('build-dist', ['build', 'copy:dist', 'uglify:dist', 'jshint:dist']);
     grunt.registerTask('dist', ['build-dist', 'mocha:all', 'bump:patch']);
-    grunt.registerTask('release-patch', ['dist'  /*TODO: add package files, commit, tag, push*/]);
-    grunt.registerTask('release-minor', ['dist', /*TODO: add package files, commit, tag */ 'bump:minor' /*TODO: add package files, commit, push*/ ]);
-    grunt.registerTask('release-major', ['dist', /*TODO: add package files, commit, tag */ 'bump:major' /*TODO: add package files, commit, push*/ ]);
+    grunt.registerTask('release-patch', ['dist'  /*TODO: add package files, verify no other changes, commit, tag, push*/]);
+    grunt.registerTask('release-minor', ['dist', /*TODO: add package files, verify no other changes, commit, tag */ 'bump:minor' /*TODO: add package files, commit, push*/ ]);
+    grunt.registerTask('release-major', ['dist', /*TODO: add package files, verify no other changes, commit, tag */ 'bump:major' /*TODO: add package files, commit, push*/ ]);
     //
     // Test tasks
     //
@@ -133,7 +133,7 @@ module.exports = function(grunt) {
     // Test the minified dist files
     grunt.registerTask('test-headless-dist-min', ['build-dist', 'mocha:distmin']);
 
-    grunt.registerTask('test-headless-all', ['mocha:all']);
+    grunt.registerTask('test-headless-all', ['build-dist', 'mocha:all']);
 
     // Default task.
     grunt.registerTask('default', 'build');
