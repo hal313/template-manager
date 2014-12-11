@@ -1,14 +1,16 @@
 {
   "name": "template-manager",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "homepage": "https://github.com/hal313/template-manager",
   "authors": [
     "john-github@rmdashrf.org"
   ],
   "description": "A JavaScript library to manage templates",
-  "main": "TemplateManager.js",
+  "main": "dist/TemplateManager.js",
   "moduleType": [
-    "globals"
+    "globals",
+    "node",
+    "amd"
   ],
   "keywords": [
     "javascript",
