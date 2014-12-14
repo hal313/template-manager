@@ -11,6 +11,38 @@
 module.exports = function(grunt) {
     'use strict';
 
+    // The build version
+    var _version = grunt.file.readJSON('package.json').version;
+    // The build date
+    var _buildDate = new Date();
+    // The file which has replacements in JSON format
+    var _replacementFilePath = 'replacements.json';
+    // The replacements read in from the file
+    var _replacements = null;
+    // If the file is not present, _replacements will be null
+    if (grunt.file.exists(_replacementFilePath) && grunt.file.isFile(_replacementFilePath)) {
+        _replacements = grunt.file.readJSON(_replacementFilePath);
+    }
+
+    // Change any strings in the content that match ${some string here} to the value specified in replacements.json
+    var _resolveFileContent = function(content) {
+        var resolvedContent = content;
+
+        // The default resolvers (build version and date)
+        resolvedContent = resolvedContent.replace(new RegExp('\\${build.version}', 'gi'), _version);
+        resolvedContent = resolvedContent.replace(new RegExp('\\${build.date}', 'gi'), _buildDate);
+
+        // If the replacements file exists, use the key/value pairs from there
+        if (_replacements) {
+            for (var key in _replacements) {
+                resolvedContent = resolvedContent.replace(new RegExp('\\${' + key + '}', 'gi'), _replacements[key]);
+            }
+        }
+
+        // Return the resolved content
+        return resolvedContent;
+    };
+
     grunt.initConfig({
         bump: {
             options: {
@@ -64,6 +96,9 @@ module.exports = function(grunt) {
             dist: ['dist/TemplateManager.js']
         },
         copy: {
+            options: {
+                process: _resolveFileContent
+            },
             dist: {
                 files: [
                     {
@@ -111,30 +146,31 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['jshint:source']);
     grunt.registerTask('build-dist', ['build', 'copy:dist', 'uglify:dist', 'jshint:dist']);
     grunt.registerTask('dist', ['build-dist', 'mocha:all', 'bump:patch']);
-    grunt.registerTask('release-patch', ['dist'  /*TODO: add package files, verify no other changes, commit, tag, push*/]);
-    grunt.registerTask('release-minor', ['dist', /*TODO: add package files, verify no other changes, commit, tag */ 'bump:minor' /*TODO: add package files, commit, push*/ ]);
-    grunt.registerTask('release-major', ['dist', /*TODO: add package files, verify no other changes, commit, tag */ 'bump:major' /*TODO: add package files, commit, push*/ ]);
+    grunt.registerTask('release-patch', ['dist'  /*TODO: check for non-added files, add package files, verify no other changes, commit, tag, push*/]);
+    grunt.registerTask('release-minor', ['dist', /*TODO: check for non-added files, add package files, verify no other changes, commit, tag */ 'bump:minor' /*TODO: add package files, commit, push*/ ]);
+    grunt.registerTask('release-major', ['dist', /*TODO: check for non-added files, add package files, verify no other changes, commit, tag */ 'bump:major' /*TODO: add package files, commit, push*/ ]);
     //
     // Test tasks
     //
     // Test the source code
-    grunt.registerTask('test', ['open:source', 'watch']);
+    grunt.registerTask('test-source', ['open:source', 'watch']);
+    grunt.registerTask('test', ['test-source']); // Alias for test-source
     // Test the code in dist
     grunt.registerTask('test-dist', ['build-dist', 'open:dist', 'watch']);
-    // Test the minified dist files
+    // Test the minified dist file
     grunt.registerTask('test-dist-min', ['build-dist', 'open:distmin', 'watch']);
     //
     // Headless test tasks
     //
     // Test the source code
-    grunt.registerTask('test-headless', ['mocha:source']);
+    grunt.registerTask('test-headless-source', ['mocha:source']);
     // Test the code in dist
     grunt.registerTask('test-headless-dist', ['build-dist', 'mocha:dist']);
-    // Test the minified dist files
+    // Test the minified dist file
     grunt.registerTask('test-headless-dist-min', ['build-dist', 'mocha:distmin']);
-
+    // Test all the code (source and dist)
     grunt.registerTask('test-headless-all', ['build-dist', 'mocha:all']);
 
-    // Default task.
+    // Default task
     grunt.registerTask('default', 'build');
 };
