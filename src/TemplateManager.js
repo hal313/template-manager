@@ -1,7 +1,13 @@
+// Version: ${build.version}
+// Build Date: ${build.date}
+//
 // TODO: Allow escape (this will have to be figured out in the regular expression)
 // TODO: jsdoc
 // TODO: .add() should take in an optional third argument (resolver map)
 
+// TODO: Test require/define
+// TODO: remove jquery
+//
 (function(root, factory) {
     'use strict';
 
@@ -50,11 +56,15 @@
         return _getRegex.cache[regex];
     };
 
-    var TemplateManager = function(defaultResolverMap) {
+    var TemplateManager = function(defaultResolverMap, options) {
 
         if (!(this instanceof TemplateManager)) {
-            return new TemplateManager(defaultResolverMap);
+            return new TemplateManager(defaultResolverMap, options);
         }
+
+        var _options = $.extend({
+            scriptType: 'text/x-template-manager'
+        }, options);
 
         // The template cache
         var _templateCache = [];
@@ -88,8 +98,8 @@
                 var name;
                 var content;
 
-                // Check to see if the script type is 'text/template'
-                if ('text/template' === script.type) {
+                // Check to see if the script type matches the type desired
+                if (_options.scriptType === script.type) {
                     $script = jQuery(script);
                     name = $script.data('name').trim();
                     content = script.innerHTML.trim();
@@ -120,14 +130,13 @@
             var processedTemplateString = template;
 
             jQuery.each(resolverMap, function(index, resolver) {
-//                var regex = new RegExp('\\${' + resolver.regex + '}', 'gi');
                 var regex = _getRegex('\\${' + resolver.regex + '}');
                 var replacement;
 
                 // We allow functions for the replacement!
                 if (jQuery.isFunction(resolver.replacement)) {
                     try {
-                        replacement = resolver.replacement();
+                        replacement = resolver.replacement(resolver.regex, template, processedTemplateString);
                     } catch(error) {
                         console.error('Error while calculating replacement for', resolver.regex, error);
                     }

@@ -3,8 +3,6 @@
 
 // TODO: Test TemplateManager functionality (add(), remove(), load(), get())
 // TODO: Test compiled template functionality (raw())
-// TODO: Test default resolverMap
-// TODO: Test getting scripts from the web page
 
 /**
  * @author: jghidiu
@@ -13,6 +11,9 @@
 
 (function() {
     'use strict';
+
+    // A simple resolver which will return the regex used; great for testing!
+    var _identityResolver = function(regex) {return regex};
 
     var _templateNames = {
         nullName: null,
@@ -35,7 +36,7 @@
                 },
                 resolverMaps: {
                     withConstants: [{regex: 'a', replacement: 'a'}],
-                    withFunctions: [{regex: 'a', replacement: function() {return 'a';}}]
+                    withFunctions: [{regex: 'a', replacement: _identityResolver}]
                 },
                 compiled: {
                     content: 'this is a simple resolver'
@@ -48,7 +49,7 @@
                 },
                 resolverMaps: {
                     withConstants: [{regex: 'a', replacement: 'a'}, {regex: 'simple', replacement: 'simple'}],
-                    withFunctions: [{regex: 'a', replacement: function() {return 'a';}}, {regex: 'simple', replacement: function() {return 'simple';}}]
+                    withFunctions: [{regex: 'a', replacement: _identityResolver}, {regex: 'simple', replacement: _identityResolver}]
                 },
                 compiled: {
                     content: 'this is a simple resolver'
@@ -61,7 +62,7 @@
                 },
                 resolverMaps: {
                     withConstants: [{regex: 'an', replacement: 'an'}, {regex: 'n', replacement: 'n'}],
-                    withFunctions: [{regex: 'an', replacement: function() {return 'an';}}, {regex: 'n', replacement: function() {return 'n';}}]
+                    withFunctions: [{regex: 'an', replacement: _identityResolver}, {regex: 'n', replacement: _identityResolver}]
                 },
                 compiled: {
                     content: 'this is an embedded resolver'
@@ -246,7 +247,7 @@
 
             it('should process using default resolvers with a function', function() {
                 var defaultResolverMap = {};
-                defaultResolverMap[_resolutions.regular.simple.template.templateName] = [{regex: 'a', replacement: function() {return 'a';}}];
+                defaultResolverMap[_resolutions.regular.simple.template.templateName] = [{regex: 'a', replacement: _identityResolver}];
 
                 this.templateManager = new TemplateManager(defaultResolverMap);
                 this.template = this.templateManager.add(_resolutions.regular.simple.template.templateName, _resolutions.regular.simple.template.templateContent);
@@ -284,7 +285,7 @@
 
             it('should process using default resolvers with functions', function() {
                 var defaultResolverMap = {};
-                defaultResolverMap[_resolutions.regular.multiple.template.templateName] = [{regex: 'a', replacement: function() {return 'a';}}, {regex: 'simple', replacement: function() {return 'simple';}}];
+                defaultResolverMap[_resolutions.regular.multiple.template.templateName] = [{regex: 'a', replacement: _identityResolver}, {regex: 'simple', replacement: _identityResolver}];
 
                 this.templateManager = new TemplateManager(defaultResolverMap);
                 this.template = this.templateManager.add(_resolutions.regular.multiple.template.templateName, _resolutions.regular.multiple.template.templateContent);
