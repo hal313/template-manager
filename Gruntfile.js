@@ -1,8 +1,6 @@
 /*global module:true */
 
 // TODO: Implement code coverage
-// TODO: release should run headless test (phantomJS?)
-// TODO: Get build/dist/release working with bump (build should not tag, dist should bump, tag and commit, release should bump:minor, tag and commit (and push?))
 
 /**
  * @author: jghidiu
@@ -164,6 +162,7 @@ module.exports = function(grunt) {
     //
     // Test the source code
     grunt.registerTask('test-headless-source', ['mocha:source']);
+    grunt.registerTask('test-headless', ['test-headless-source']);
     // Test the code in dist
     grunt.registerTask('test-headless-dist', ['build-dist', 'mocha:dist']);
     // Test the minified dist file
