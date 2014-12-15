@@ -1,6 +1,9 @@
 /*global module:true */
 
 // TODO: Implement code coverage
+// TODO: https://www.npmjs.com/package/package-json-to-readme
+// TODO: https://docs.npmjs.com/files/package.json
+// TODO: Include author in default resolvers
 
 /**
  * @author: jghidiu
