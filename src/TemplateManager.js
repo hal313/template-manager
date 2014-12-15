@@ -5,7 +5,8 @@
 // TODO: jsdoc
 // TODO: .add() should take in an optional third argument (resolver map)
 
-// TODO: Test require/define
+// TODO: Add getNames()
+// TODO: Add empty()
 // TODO: remove jquery
 //
 (function(root, factory) {
@@ -222,6 +223,9 @@
         };
 
     };
+
+    // TODO: Test this
+    // TemplateManager.version = "{build.version}";
 
     return TemplateManager;
 });
