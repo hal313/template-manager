@@ -8,7 +8,6 @@
 
 // TODO: Add getNames()
 // TODO: Add empty()
-// TODO: remove jquery & allow for use in node
 
 (function(root, factory) {
     'use strict';
