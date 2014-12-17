@@ -13,9 +13,18 @@ module.exports = function(grunt) {
     'use strict';
 
     // The build version
-    var _version = grunt.file.readJSON('package.json').version;
+    var _buildVersion = grunt.file.readJSON('package.json').version;
     // The build date
     var _buildDate = new Date();
+    var _buildUser = '';
+    if ('win32' === process.platform) {
+        _buildUser = process.env.USERNAME;
+    } else if ('linux' === process.platform) {
+        _buildUser = process.env.USER;
+    }
+
+
+
     // The file which has replacements in JSON format
     var _replacementFilePath = 'replacements.json';
     // The replacements read in from the file
@@ -29,8 +38,9 @@ module.exports = function(grunt) {
     var _resolveFileContent = function(content) {
         var resolvedContent = content;
 
-        // The default resolvers (build version and date)
-        resolvedContent = resolvedContent.replace(new RegExp('\\${build.version}', 'gi'), _version);
+        // The default resolvers (build user, version and date)
+        resolvedContent = resolvedContent.replace(new RegExp('\\${build.user}', 'gi'), _buildUser);
+        resolvedContent = resolvedContent.replace(new RegExp('\\${build.version}', 'gi'), _buildVersion);
         resolvedContent = resolvedContent.replace(new RegExp('\\${build.date}', 'gi'), _buildDate);
 
         // If the replacements file exists, use the key/value pairs from there
