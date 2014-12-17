@@ -1,40 +1,53 @@
+/*global $:true */
+
+// Build User: jghidiu
 // Version: 1.1.5
-// Build Date: Sun Dec 14 2014 02:44:25 GMT-0500 (Eastern Standard Time)
+// Build Date: Wed Dec 17 2014 00:49:15 GMT-0500 (Eastern Standard Time)
 //
 // TODO: Allow escape (this will have to be figured out in the regular expression)
 // TODO: jsdoc
 // TODO: .add() should take in an optional third argument (resolver map)
 
-// TODO: Test require/define
+// TODO: Add getNames()
+// TODO: Add empty()
 // TODO: remove jquery
 //
 (function(root, factory) {
     'use strict';
 
+    // Try to define a console object
     (function(){
-        if (!window.console) {
-            window.console = {};
-        }
-        // Union of Chrome, FF, IE, and Safari console methods
-        var consoleFunctions = [
-            'log', 'info', 'warn', 'error', 'debug', 'trace', 'dir', 'group',
-            'groupCollapsed', 'groupEnd', 'time', 'timeEnd', 'profile', 'profileEnd',
-            'dirxml', 'assert', 'count', 'markTimeline', 'timeStamp', 'clear'
-        ];
-        // Define undefined methods as no-ops to prevent errors
-        for (var i = 0; i < consoleFunctions.length; i++) {
-            if (!window.console[consoleFunctions[i]]) {
-                window.console[consoleFunctions[i]] = function() {};
+        try {
+            if (!console && (window)) {
+                // Union of Chrome, FF, IE, and Safari console methods
+                var consoleFunctions = [
+                    'log', 'info', 'warn', 'error', 'debug', 'trace', 'dir', 'group',
+                    'groupCollapsed', 'groupEnd', 'time', 'timeEnd', 'profile', 'profileEnd',
+                    'dirxml', 'assert', 'count', 'markTimeline', 'timeStamp', 'clear'
+                ];
+                // Define undefined methods as no-ops to prevent errors
+                for (var i = 0; i < consoleFunctions.length; i++) {
+                    if (!window.console[consoleFunctions[i]]) {
+                        window.console[consoleFunctions[i]] = function() {};
+                    }
+                }
             }
+        } catch(error) {
+            // Not much to do if there is no console
         }
+
     })();
 
+    // Determine the module system (if any)
     if (typeof define === 'function' && define.amd) {
+        // AMD
         define(factory);
     } else {
+        // Node
         if (typeof exports !== 'undefined') {
             module.exports = factory();
         } else {
+            // None
             root.TemplateManager = factory();
         }
     }
@@ -222,6 +235,9 @@
         };
 
     };
+
+    // Place the version as a member in the function
+    TemplateManager.version = '1.1.5';
 
     return TemplateManager;
 });
