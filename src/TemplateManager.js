@@ -1,5 +1,3 @@
-/*global $:true */
-
 // Build User: ${build.user}
 // Version: ${build.version}
 // Build Date: ${build.date}
@@ -18,7 +16,12 @@
     // Try to define a console object
     (function(){
         try {
-            if (!console && (window)) {
+            if (!console && ('undefined' !== typeof window)) {
+                // Define the console if it does not exist
+                if (!window.console) {
+                    window.console = {};
+                }
+
                 // Union of Chrome, FF, IE, and Safari console methods
                 var consoleFunctions = [
                     'log', 'info', 'warn', 'error', 'debug', 'trace', 'dir', 'group',
@@ -69,15 +72,29 @@
         return _getRegex.cache[regex];
     };
 
+    var _forEach = function(collection, func) {
+        var index  = -1,
+            length = collection ? collection.length : 0;
+
+        while (++index < length) {
+            func(index, collection[index]);
+        }
+    };
+
+    function _merge(object1, object2){
+        var mergedObject = {};
+        for (var attrname1 in object1) { mergedObject[attrname1] = object1[attrname1]; }
+        for (var attrname2 in object2) { mergedObject[attrname2] = object2[attrname2]; }
+        return mergedObject;
+    }
+
     var TemplateManager = function(defaultResolverMap, options) {
 
         if (!(this instanceof TemplateManager)) {
             return new TemplateManager(defaultResolverMap, options);
         }
 
-        var _options = $.extend({
-            scriptType: 'text/x-template-manager'
-        }, options);
+        var _options = _merge({scriptType: 'text/x-template-manager'}, options);
 
         // The template cache
         var _templateCache = [];
@@ -103,29 +120,34 @@
 
         var _load = function() {
             // Get all the scripts
-            var $scripts = jQuery('script');
 
-            // Add each template into the cache
-            $scripts.each(function(index, script) {
-                var $script;
-                var name;
-                var content;
+            if('undefined' !== typeof jQuery) {
+                var $scripts = jQuery('script');
 
-                // Check to see if the script type matches the type desired
-                if (_options.scriptType === script.type) {
-                    $script = jQuery(script);
-                    name = $script.data('name').trim();
-                    content = script.innerHTML.trim();
+                // Add each template into the cache
+                $scripts.each(function(index, script) {
+                    var $script;
+                    var name;
+                    var content;
 
-                    if (name.length) {
-                        // Add to the cache
-                        _addToCache(name, content);
-                    } else {
-                        // Output warning (no name)
-                        console.warn('Template has no name');
+                    // Check to see if the script type matches the type desired
+                    if (_options.scriptType === script.type) {
+                        $script = jQuery(script);
+                        name = $script.data('name').trim();
+                        content = script.innerHTML.trim();
+
+                        if (name.length) {
+                            // Add to the cache
+                            _addToCache(name, content);
+                        } else {
+                            // Output warning (no name)
+                            console.warn('Template has no name');
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                console.log('jQuery is not available; if a DOM exists with script elements, they will not be made available');
+            }
 
             _hasLoaded = true;
         };
@@ -142,12 +164,12 @@
         var _processLoop = function(template, resolverMap) {
             var processedTemplateString = template;
 
-            jQuery.each(resolverMap, function(index, resolver) {
+            _forEach(resolverMap, function(index, resolver) {
                 var regex = _getRegex('\\${' + resolver.regex + '}');
                 var replacement;
 
                 // We allow functions for the replacement!
-                if (jQuery.isFunction(resolver.replacement)) {
+                if ('function' === typeof resolver.replacement) {
                     try {
                         replacement = resolver.replacement(resolver.regex, template, processedTemplateString);
                     } catch(error) {
@@ -179,14 +201,14 @@
 
             // Populate the default resolvers
             if (defaultResolverMap && defaultResolverMap[templateName]) {
-                jQuery.each(defaultResolverMap[templateName], function(index, resolver) {
+                _forEach(defaultResolverMap[templateName], function(index, resolver) {
                     _resolverMap.push(resolver);
                 });
             }
 
             // Populate the resolver map
             if (resolverMap) {
-                jQuery.each(resolverMap, function(index, resolver) {
+                _forEach(resolverMap, function(index, resolver) {
                     _resolverMap.push(resolver);
                 });
             }
