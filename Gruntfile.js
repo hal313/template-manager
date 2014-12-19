@@ -94,7 +94,7 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'dist/TemplateManager.min.js': ['src/**/*.js']
+                    'dist/TemplateManager.min.js': ['dist/TemplateManager.js']
                 }
             }
         },
