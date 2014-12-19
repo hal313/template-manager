@@ -1,6 +1,6 @@
 // Build User: jghidiu
-// Version: 1.1.5
-// Build Date: Fri Dec 19 2014 01:18:57 GMT-0500 (Eastern Standard Time)
+// Version: 1.1.6
+// Build Date: Fri Dec 19 2014 01:22:58 GMT-0500 (Eastern Standard Time)
 
 // TODO: Allow escape (this will have to be figured out in the regular expression)
 // TODO: jsdoc
@@ -258,7 +258,7 @@
     };
 
     // Place the version as a member in the function
-    TemplateManager.version = '1.1.5';
+    TemplateManager.version = '1.1.6';
 
     return TemplateManager;
 });
