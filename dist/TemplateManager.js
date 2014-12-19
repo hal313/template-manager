@@ -1,6 +1,6 @@
 // Build User: jghidiu
 // Version: 1.1.5
-// Build Date: Wed Dec 17 2014 01:46:40 GMT-0500 (Eastern Standard Time)
+// Build Date: Fri Dec 19 2014 01:18:57 GMT-0500 (Eastern Standard Time)
 
 // TODO: Allow escape (this will have to be figured out in the regular expression)
 // TODO: jsdoc
@@ -8,7 +8,6 @@
 
 // TODO: Add getNames()
 // TODO: Add empty()
-// TODO: remove jquery & allow for use in node
 
 (function(root, factory) {
     'use strict';
@@ -146,7 +145,7 @@
                     }
                 });
             } else {
-                console.log('jQuery is not available or there is no dom');
+                console.log('jQuery is not available; if a DOM exists with script elements, they will not be made available');
             }
 
             _hasLoaded = true;
