@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - '0.11'
+before_install:
+  - currentfolder=${PWD##*/}
+  - if [ "$currentfolder" != 'template-manager' ]; then cd .. && eval "mv $currentfolder template-manager" && cd template-managermodule; fi
+  - npm install -g grunt-cli
+  - npm install -g bower
+  - npm install
+  - bower install
