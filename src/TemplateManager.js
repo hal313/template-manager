@@ -5,6 +5,7 @@
 // TODO: Allow escape (this will have to be figured out in the regular expression)
 // TODO: jsdoc
 // TODO: .add() should take in an optional third argument (resolver map)
+// TODO: Remove jquery dep
 
 // TODO: Add getNames()
 // TODO: Add empty()
