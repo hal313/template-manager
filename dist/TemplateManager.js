@@ -1,10 +1,11 @@
 // Build User: jghidiu
 // Version: 1.1.6
-// Build Date: Fri Dec 19 2014 01:22:58 GMT-0500 (Eastern Standard Time)
+// Build Date: Tue Dec 23 2014 02:05:46 GMT-0500 (Eastern Standard Time)
 
 // TODO: Allow escape (this will have to be figured out in the regular expression)
 // TODO: jsdoc
 // TODO: .add() should take in an optional third argument (resolver map)
+// TODO: Remove jquery dep
 
 // TODO: Add getNames()
 // TODO: Add empty()
