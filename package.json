@@ -25,6 +25,7 @@
         "test": "grunt test-headless-all"
     },
     "files": [
+        "dist",
         "spec",
         "src",
         "test",
@@ -32,7 +33,7 @@
         ".jshintrc",
         ".travis.yml",
         ".yo-rc.json",
-        "Gruntfile",
+        "Gruntfile.js",
         "LICENSE",
         "package.json",
         "README.md",
