@@ -2,9 +2,46 @@
     "name": "template-manager",
     "version": "1.1.6",
     "description": "A JavaScript library to manage templates",
+    "homepage": "https://github.com/hal313/template-manager",
+    "bugs": {
+        "url": "https://github.com/hal313/template-manager/issues",
+        "email": "john-github@rmdashrf.org"
+    },
+    "license": "MIT",
+    "main": "dist/TemplateManager.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hal313/template-manager.git"
+    },
+    "author": {
+        "name": "John Ghidiu",
+        "email": "john-github@rmdashrf.org",
+        "url": "https://github.com/hal313"
+    },
+    "engines": {
+        "node": ">=0.10.0"
+    },
     "scripts": {
         "test": "grunt test-headless-all"
     },
+    "files": [
+        "spec",
+        "src",
+        "test",
+        ".bowerrc",
+        ".jshintrc",
+        ".travis.yml",
+        ".yo-rc.json",
+        "Gruntfile",
+        "LICENSE",
+        "package.json",
+        "README.md",
+        "replacements.json"
+    ],
+    "keywords": [
+        "template",
+        "javascript"
+    ],
     "devDependencies": {
         "grunt": "^0.4.5",
         "grunt-contrib-watch": "^0.6.1",
@@ -14,23 +51,5 @@
         "grunt-contrib-jshint": "^0.10.0",
         "grunt-contrib-copy": "^0.7.0",
         "grunt-mocha": "^0.4.11"
-    },
-    "main": "dist/TemplateManager.js",
-    "directories": {
-        "test": "test"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/hal313/template-manager.git"
-    },
-    "keywords": [
-        "template",
-        "javascript"
-    ],
-    "author": "John Ghidiu",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/hal313/template-manager/issues"
-    },
-    "homepage": "https://github.com/hal313/template-manager"
+    }
 }
