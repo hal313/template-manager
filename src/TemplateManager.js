@@ -9,6 +9,8 @@
 
 // TODO: Add getNames()
 // TODO: Add empty()
+// TODO: Remove jquery
+// TODO: Fix broken 0 regex
 
 (function(root, factory) {
     'use strict';
@@ -180,7 +182,7 @@
                 }
 
                 // Only replace if the replacement is defined
-                if (replacement) {
+                if (undefined !== typeof replacement && 0 !== (replacement + '').length) {
                     processedTemplateString = processedTemplateString.replace(regex, replacement);
                 }
             });

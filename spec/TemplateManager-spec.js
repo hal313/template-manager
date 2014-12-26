@@ -310,6 +310,19 @@
 
         });
 
+        describe('Resolved Bugs', function() {
+
+            it('should process 0 as a resolver', function() {
+
+                var template = this.templateManager.add('r', '${r}');
+
+                console.log('template');
+                expect(template.process([{regex: 'r', replacement: 0}])).to.equal('0');
+
+            });
+
+        });
+
     });
 
 })();
