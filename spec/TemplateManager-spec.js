@@ -210,8 +210,6 @@
             var embeddedTemplateName = 'test-template';
             var embeddedTemplateContent = 'This is a template';
             expect(this.templateManager.get(embeddedTemplateName).raw()).to.equal(embeddedTemplateContent);
-
-            console.log(this.templateManager.get('t').raw());
         });
 
     });
@@ -306,6 +304,54 @@
 
             it('should process with an embedded function', function() {
                 expect(this.template.process(_resolutions.regular.embedded.resolverMaps.withFunctions)).to.equal(_resolutions.regular.embedded.compiled.content);
+            });
+
+        });
+
+        describe('asResolverMap', function() {
+
+            it('should create an empty resolver map from an empty object', function () {
+                var resolverMap = this.templateManager.asResolverMap({});
+                expect(resolverMap).to.be.an('Array');
+                expect(resolverMap.length).to.equal(0);
+            });
+
+            it('should create a resolver map from an object', function () {
+                var pojo = {
+                    stringValue: 'value',
+                    intValue: 1,
+                    floatValue: 2.2
+                };
+                var resolverMap = this.templateManager.asResolverMap(pojo);
+
+                expect(resolverMap).to.be.an('Array');
+                expect(resolverMap.length).to.equal(Object.getOwnPropertyNames(pojo).length);
+            });
+
+            it('should resolve correctly using a generated resolver map', function () {
+                var pojo = {
+                    stringValue: 'value',
+                    intValue: 1,
+                    floatValue: 2.2
+                };
+
+                var result = this
+                        .templateManager
+                        .add('asResolverMapTemplate', '${stringValue}${intValue}${floatValue}')
+                        .process(this.templateManager.asResolverMap(pojo))
+                    ;
+
+                expect(result).to.equal(pojo.stringValue + '' + pojo.intValue + '' + pojo.floatValue);
+            });
+
+        });
+
+        describe('Resolved Bugs', function() {
+
+            it('should process 0 as a resolver', function() {
+                var template = this.templateManager.add('r', '${r}');
+                expect(template.process([{regex: 'r', replacement: 0}])).to.equal('0');
+
             });
 
         });
