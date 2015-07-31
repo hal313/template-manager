@@ -76,7 +76,8 @@
 
     var _forEach = function(collection, func) {
         var index  = -1,
-            length = collection ? collection.length : 0;
+            length = collection ? collection.length : 0
+            ;
 
         while (++index < length) {
             func(index, collection[index]);
@@ -182,7 +183,7 @@
                 }
 
                 // Only replace if the replacement is defined
-                if (undefined !== typeof replacement && 0 !== (replacement + '').length) {
+                if (undefined !== replacement && null !== replacement) {
                     processedTemplateString = processedTemplateString.replace(regex, replacement);
                 }
             });
@@ -237,7 +238,7 @@
             rawTemplate = _find(name);
 
             // If the template is not found in the cache, return null
-            if (!rawTemplate) {
+            if (undefined === rawTemplate || null === rawTemplate) {
                 console.error('Template \'%s\' does not exist', name);
             }
             return {
@@ -251,11 +252,23 @@
 
         };
 
+        var _asResolverMap = function asResolverMap(pojo) {
+            var resolverMap = [];
+            _forEach(Object.getOwnPropertyNames(pojo), function forEach(index, name) {
+                resolverMap.push( {
+                    regex: name,
+                    replacement: pojo[name]
+                });
+            });
+            return resolverMap;
+        };
+
         return {
             load: _load,
             get: _get,
             add: _add,
-            remove: _remove
+            remove: _remove,
+            asResolverMap: _asResolverMap
         };
 
     };
