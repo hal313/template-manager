@@ -1,6 +1,6 @@
-// Build User: jghidiu
+// Build User: jrg2
 // Version: 1.1.6
-// Build Date: Tue Dec 23 2014 02:05:46 GMT-0500 (Eastern Standard Time)
+// Build Date: Thu Jul 30 2015 22:10:21 GMT-0400 (Eastern Daylight Time)
 
 // TODO: Allow escape (this will have to be figured out in the regular expression)
 // TODO: jsdoc
@@ -9,6 +9,8 @@
 
 // TODO: Add getNames()
 // TODO: Add empty()
+// TODO: Remove jquery
+// TODO: Fix broken 0 regex
 
 (function(root, factory) {
     'use strict';
@@ -74,7 +76,8 @@
 
     var _forEach = function(collection, func) {
         var index  = -1,
-            length = collection ? collection.length : 0;
+            length = collection ? collection.length : 0
+            ;
 
         while (++index < length) {
             func(index, collection[index]);
@@ -180,7 +183,7 @@
                 }
 
                 // Only replace if the replacement is defined
-                if (replacement) {
+                if (undefined !== replacement && null !== replacement) {
                     processedTemplateString = processedTemplateString.replace(regex, replacement);
                 }
             });
@@ -235,7 +238,7 @@
             rawTemplate = _find(name);
 
             // If the template is not found in the cache, return null
-            if (!rawTemplate) {
+            if (undefined === rawTemplate || null === rawTemplate) {
                 console.error('Template \'%s\' does not exist', name);
             }
             return {
@@ -249,11 +252,23 @@
 
         };
 
+        var _asResolverMap = function asResolverMap(pojo) {
+            var resolverMap = [];
+            _forEach(Object.getOwnPropertyNames(pojo), function forEach(index, name) {
+                resolverMap.push( {
+                    regex: name,
+                    replacement: pojo[name]
+                });
+            });
+            return resolverMap;
+        };
+
         return {
             load: _load,
             get: _get,
             add: _add,
-            remove: _remove
+            remove: _remove,
+            asResolverMap: _asResolverMap
         };
 
     };
