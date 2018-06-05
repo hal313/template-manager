@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Mocha Spec Runner</title>
+  <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+</head>
+<body>
+  <div id="mocha"></div>
+  <script src="../node_modules/mocha/mocha.js"></script>
+  <script>mocha.setup('')</script>
+  <script src="../node_modules/chai/chai.js"></script>
+  <script>
+    var assert = chai.assert;
+    var expect = chai.expect;
+    var should = chai.should();
+  </script>
+
+  <!-- The reload script -->
+  <script src="http://localhost:35729/livereload.js"></script>
+
+  <!-- Source files -->
+  <script src="../src/CommonUtil.js"></script>
+  <script src="../src/StringResolver.js"></script>
+
+  <!-- Spec files -->
+  <script src="../spec/StringResolver-e2e-spec.js"></script>
+
+
+  <!-- Run the tests -->
+  <script>mocha.run();</script>
+</body>
+</html>

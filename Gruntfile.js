@@ -1,9 +1,17 @@
 /*global module:true */
 
+
+// TODO: CommonUtil e2e tests
+// TODO: Mocha Chrome headless?
+// TODO: Clean up targets
+// TODO: NPM scripts
 // TODO: Implement code coverage
 // TODO: https://www.npmjs.com/package/package-json-to-readme
 // TODO: https://docs.npmjs.com/files/package.json
 // TODO: Include author in default resolvers
+
+// TODO: Single var
+// TODO: Remove _
 
 /**
  * @author: jghidiu
@@ -57,7 +65,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         bump: {
             options: {
-                files: ['bower.json', 'package.json'],
+                files: ['package.json'],
                 updateConfigs: [],
                 commit: false,
                 commitMessage: '-Tagged for release v%VERSION%',
@@ -72,21 +80,18 @@ module.exports = function(grunt) {
             }
         },
         open: {
-            source: {
-                path: 'test/source.html'
+            'string-resolver-source': {
+                path: 'e2e/string-resolver-source.html'
             },
-            dist: {
-                path: 'test/dist.html'
-            },
-            distmin: {
-                path: 'test/dist-min.html'
+            'template-manager-source': {
+                path: 'e2e/template-manager-source.html'
             }
         },
         watch: {
             options: {
                 livereload: true
             },
-            files: ['src/**/*.*', 'spec/**/*.*', 'test/**/*.*', 'Gruntfile.js']
+            files: ['src/**/*.*', 'spec/**/*.*', 'e2e/**/*.*', 'Gruntfile.js']
         },
         uglify: {
             options: {
@@ -127,17 +132,8 @@ module.exports = function(grunt) {
                 run: true,
                 reporter: 'Spec'
             },
-            all: {
-                src: ['test/**/*.*']
-            },
             source: {
-                src: ['test/source.html']
-            },
-            dist: {
-                src: ['test/dist.html']
-            },
-            distmin: {
-                src: ['test/dist-min.html']
+                src: ['e2e/template-manager-source.html', 'e2e/string-resolver-source.html']
             }
         }
 
@@ -156,7 +152,7 @@ module.exports = function(grunt) {
     // Register tasks
     grunt.registerTask('build', ['jshint:source']);
     grunt.registerTask('build-dist', ['build', 'copy:dist', 'uglify:dist', 'jshint:dist']);
-    grunt.registerTask('dist', ['build-dist', 'mocha:all', 'bump:patch']);
+    grunt.registerTask('dist', ['build-dist', 'mocha:source', 'bump:patch']);
     grunt.registerTask('release-patch', ['dist'  /*TODO: check for non-added files, add package files, verify no other changes, commit, tag, push*/]);
     grunt.registerTask('release-minor', ['dist', /*TODO: check for non-added files, add package files, verify no other changes, commit, tag */ 'bump:minor' /*TODO: add package files, commit, push*/ ]);
     grunt.registerTask('release-major', ['dist', /*TODO: check for non-added files, add package files, verify no other changes, commit, tag */ 'bump:major' /*TODO: add package files, commit, push*/ ]);
@@ -164,24 +160,13 @@ module.exports = function(grunt) {
     // Test tasks
     //
     // Test the source code
-    grunt.registerTask('test-source', ['open:source', 'watch']);
+    grunt.registerTask('test-source', ['open:string-resolver-source', 'open:template-manager-source', 'watch']);
     grunt.registerTask('test', ['test-source']); // Alias for test-source
-    // Test the code in dist
-    grunt.registerTask('test-dist', ['build-dist', 'open:dist', 'watch']);
-    // Test the minified dist file
-    grunt.registerTask('test-dist-min', ['build-dist', 'open:distmin', 'watch']);
     //
     // Headless test tasks
     //
     // Test the source code
-    grunt.registerTask('test-headless-source', ['mocha:source']);
-    grunt.registerTask('test-headless', ['test-headless-source']);
-    // Test the code in dist
-    grunt.registerTask('test-headless-dist', ['build-dist', 'mocha:dist']);
-    // Test the minified dist file
-    grunt.registerTask('test-headless-dist-min', ['build-dist', 'mocha:distmin']);
-    // Test all the code (source and dist)
-    grunt.registerTask('test-headless-all', ['build-dist', 'mocha:all']);
+    grunt.registerTask('test-headless', ['mocha:source']);
 
     // Default task
     grunt.registerTask('default', 'build');
