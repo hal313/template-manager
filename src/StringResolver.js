@@ -1,6 +1,6 @@
-// Build User: ${build.user}
-// Version: ${build.version}
-// Build Date: ${build.date}
+// Build User:  ${build.user}
+// Version:     ${build.version}
+// Build Date:  ${build.date}
 
 // TODO: es6
 // TODO: jsdoc
@@ -14,126 +14,100 @@
 //         c: some_resolver_prefix_rest_of_resolver
 //         After resolving just a, there will be unbalanced resolvers; but only for one loop
 
+import { CommonUtil } from './CommonUtil';
 
-(function(root, factory) {
-    'use strict';
-
-    // Determine the module system (if any)
-    if ('function' === typeof define && !!define.amd) {
-        // AMD
-        define('StringResolver', ['./CommonUtil.js'], factory);
+let normalizeValue = (value, pattern) => {
+    if ('function' === typeof value) {
+        return normalizeValue(value(pattern));
     } else {
-        // Node
-        if ('object' === typeof exports) {
-            module.exports = factory(require('./CommonUtil'));
-        } else {
-            // None
-            root.StringResolver = factory(root.CommonUtil);
-        }
+        return value;
     }
+};
 
-})(this, function(CommonUtil) {
-    'use strict';
+let getRegex = (pattern) => {
+    return new RegExp('\\${' + pattern + '}', 'gi');
+};
 
-    var StringResolver = function StringResolver(defaultResolverMap, options) {
+let processLoop = (template, resolverMap, options) => {
+    let processedTemplateString = template;
 
-        if (!(this instanceof StringResolver)) {
-            return new StringResolver(defaultResolverMap, options);
+    CommonUtil.forEach(resolverMap, (resolver) => {
+
+        let regex = getRegex(resolver.pattern),
+            replacement;
+
+        // We allow functions for the replacement!
+        if ('function' === typeof resolver.replacement) {
+            replacement = resolver.replacement(resolver.pattern, template, processedTemplateString);
+        } else {
+            replacement = resolver.replacement;
         }
 
-        var identityResolver = function identityResolver(key) {
-            return '${' + key + '}';
-        },
-        _defaultResolverMap = CommonUtil.normalizeResolverDefinitions(defaultResolverMap),
-        _options = CommonUtil.merge({
-            nullReplacement: identityResolver,
-            undefinedReplacement: identityResolver
-        }, options),
-        normalizeValue = function normalizeValue(value, pattern) {
-            if ('function' === typeof value) {
-                return normalizeValue(value(pattern));
-            } else {
-                return value;
-            }
-        },
-        getRegex = function getRegex(pattern) {
-            return new RegExp('\\${' + pattern + '}', 'gi');
-        },
-        processLoop = function processLoop(template, resolverMap) {
-            var processedTemplateString = template;
+        // Only replace if the replacement is defined
+        if (undefined === replacement) {
+            processedTemplateString = processedTemplateString.replace(regex, normalizeValue(options.undefinedReplacement, resolver.pattern));
+        } else if (null === replacement) {
+            processedTemplateString = processedTemplateString.replace(regex, normalizeValue(options.nullReplacement, resolver.pattern));
+        } else {
+            processedTemplateString = processedTemplateString.replace(regex, replacement);
+        }
+    });
 
-            CommonUtil.forEach(resolverMap, function(resolver/*, index*/) {
+    return processedTemplateString;
+};
+export class StringResolver {
 
-                var regex = getRegex(resolver.pattern),
-                    replacement;
 
-                // We allow functions for the replacement!
-                if ('function' === typeof resolver.replacement) {
-                    replacement = resolver.replacement(resolver.pattern, template, processedTemplateString);
-                } else {
-                    replacement = resolver.replacement;
-                }
+    constructor(defaultResolverMap, options) {
 
-                // Only replace if the replacement is defined
-                if (undefined === replacement) {
-                    // console.log(
-                    //     'replacement is null',
-                    //     'resolver.pattern', resolver.pattern,
-                    //     '_options.undefinedReplacement', _options.undefinedReplacement,
-                    //     'normalizeValue(_options.undefinedReplacement, resolver.pattern)', normalizeValue(_options.undefinedReplacement, resolver.pattern)
-                    // );
-                    processedTemplateString = processedTemplateString.replace(regex, normalizeValue(_options.undefinedReplacement, resolver.pattern));
-                } else if (null === replacement) {
-                    processedTemplateString = processedTemplateString.replace(regex, normalizeValue(_options.nullReplacement, resolver.pattern));
-                } else {
-                    processedTemplateString = processedTemplateString.replace(regex, replacement);
-                }
-            });
+        this.defaultResolverMap = CommonUtil.normalizeResolverDefinitions(defaultResolverMap);
 
-            return processedTemplateString;
-        },
-        resolve = function resolve(template, resolverMap) {
-            var processedTemplateString = template,
-            processedLoopResult,
-            _resolverMap = [];
-
-            // Return the empty string if the template is not defined
-            if (!CommonUtil.isDefined(template)) {
-                return template;
-            }
-
-            // Populate the default resolvers
-            if (_defaultResolverMap) {
-                CommonUtil.forEach(_defaultResolverMap, function (resolver/*, index*/) {
-                    _resolverMap.push(resolver);
-                });
-            }
-
-            // Populate the resolver map
-            if (!!resolverMap) {
-                CommonUtil.forEach(CommonUtil.normalizeResolverDefinitions(resolverMap), function(resolver/*, index*/) {
-                    _resolverMap.push(resolver);
-                });
-            }
-            // Only process if there are resolvers!
-            if (_resolverMap.length) {
-                // Loop through until no more resolutions take place
-                while (processedTemplateString !== (processedLoopResult = processLoop(processedTemplateString, _resolverMap))) {
-                    processedTemplateString = processedLoopResult;
-                }
-            }
-
-            return processedTemplateString;
-        };
-
-        return {
-            resolve: resolve
-        };
+        this.options = CommonUtil.merge({
+            nullReplacement: StringResolver.identityResolver,
+            undefinedReplacement: StringResolver.identityResolver
+        }, options);
 
     };
 
-    // Place the version as a member in the function
-    StringResolver.version = '${build.version}';
+    resolve (template, resolverMap) {
+        let processedTemplateString = template;
+        let processedLoopResult;
+        let internalResolverMap = [];
 
-    return StringResolver;
-});
+        // Return the empty string if the template is not defined
+        if (!CommonUtil.isDefined(template)) {
+            return template;
+        }
+
+        // Populate the default resolvers
+        if (this.defaultResolverMap) {
+            CommonUtil.forEach(this.defaultResolverMap, (resolver) => {
+                internalResolverMap.push(resolver);
+            });
+        }
+
+        // Populate the resolver map
+        if (!!resolverMap) {
+            CommonUtil.forEach(CommonUtil.normalizeResolverDefinitions(resolverMap), (resolver) => {
+                internalResolverMap.push(resolver);
+            });
+        }
+        // Only process if there are resolvers!
+        if (internalResolverMap.length) {
+            // Loop through until no more resolutions take place
+            while (processedTemplateString !== (processedLoopResult = processLoop(processedTemplateString, internalResolverMap, this.options))) {
+                processedTemplateString = processedLoopResult;
+            }
+        }
+
+        return processedTemplateString;
+    };
+
+};
+
+StringResolver.identityResolver = (key) => {
+    return '${' + key + '}';
+};
+
+// Burn in the version
+StringResolver.version = '${build.version}';

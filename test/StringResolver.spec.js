@@ -1,6 +1,6 @@
-(() => {
+import { StringResolver } from '../src/StringResolver';
 
-    const StringResolver = require('../src/StringResolver');
+(() => {
 
     describe('StringResolver', () => {
 
@@ -13,7 +13,7 @@
         });
 
         describe('API', () => {
-            var stringResolver,
+            let stringResolver,
                 identityResolver,
                 template,
                 resolved,
@@ -36,7 +36,7 @@
                 describe('Basic Functionality', () => {
 
                     describe('Caching', () => {
-                        var template = 'this is ${resolved}',
+                        let template = 'this is ${resolved}',
                             resolved = 'this is resolved',
                             resolverMap = {resolved: 'resolved'};
 
@@ -71,66 +71,66 @@
                     });
 
                     test('should return the identity when the value is undefined (value)', () => {
-                        var stringResolver = new StringResolver({someResolver: undefined}),
+                        let stringResolver = new StringResolver({someResolver: undefined}),
                             template = 'this is resolved with ${someResolver}';
                         expect(stringResolver.resolve(template)).toEqual(template);
                     });
 
                     test('should return the identity when the value is undefined (function)', () => {
-                        var stringResolver = new StringResolver({someResolver: () => undefined}),
+                        let stringResolver = new StringResolver({someResolver: () => undefined}),
                             template = 'this is resolved with ${someResolver}';
                         expect(stringResolver.resolve(template)).toEqual(template);
                     });
 
                     test('should return the identity when the value is null (value)', () => {
-                        var stringResolver = new StringResolver({someResolver: null}),
+                        let stringResolver = new StringResolver({someResolver: null}),
                             template = 'this is resolved with ${someResolver}';
                         expect(stringResolver.resolve(template)).toEqual(template);
                     });
 
                     test('should return the identity when the value is null (function)', () => {
-                        var stringResolver = new StringResolver({someResolver: () => null}),
+                        let stringResolver = new StringResolver({someResolver: () => null}),
                             template = 'this is resolved with ${someResolver}';
                         expect(stringResolver.resolve(template)).toEqual(template);
                     });
 
                     test('should support the undefined resolver (value) with shortcut resolvers', () => {
-                        var stringResolver = new StringResolver({someResolver: undefined}, {undefinedReplacement: 'undefinedReplaced'});
+                        let stringResolver = new StringResolver({someResolver: undefined}, {undefinedReplacement: 'undefinedReplaced'});
                         expect(stringResolver.resolve('this is resolved with ${someResolver}')).toEqual('this is resolved with undefinedReplaced');
                     });
 
                     test('should support the undefined resolver (value), with proper resolvers', () => {
-                        var stringResolver = new StringResolver([{pattern: 'someResolver', replacement: undefined}], {undefinedReplacement: 'undefinedReplaced'});
+                        let stringResolver = new StringResolver([{pattern: 'someResolver', replacement: undefined}], {undefinedReplacement: 'undefinedReplaced'});
                         expect(stringResolver.resolve('this is resolved with ${someResolver}')).toEqual('this is resolved with undefinedReplaced');
                     });
 
                     test('should support the undefined resolver (function) with shortcut resolvers', () => {
-                        var stringResolver = new StringResolver({someResolver: undefined}, {undefinedReplacement: () => {return 'undefinedReplaced';}});
+                        let stringResolver = new StringResolver({someResolver: undefined}, {undefinedReplacement: () => {return 'undefinedReplaced';}});
                         expect(stringResolver.resolve('this is resolved with ${someResolver}')).toEqual('this is resolved with undefinedReplaced');
                     });
 
                     test('should support the undefined resolver (function) with proper resolvers', () => {
-                        var stringResolver = new StringResolver([{pattern: 'someResolver', replacement: undefined}], {undefinedReplacement: () => {return 'undefinedReplaced';}});
+                        let stringResolver = new StringResolver([{pattern: 'someResolver', replacement: undefined}], {undefinedReplacement: () => {return 'undefinedReplaced';}});
                         expect(stringResolver.resolve('this is resolved with ${someResolver}')).toEqual('this is resolved with undefinedReplaced');
                     });
 
                     test('should support the null resolver (value) with shortcut resolvers', () => {
-                        var stringResolver = new StringResolver({someResolver: null}, {nullReplacement: 'nullReplaced'});
+                        let stringResolver = new StringResolver({someResolver: null}, {nullReplacement: 'nullReplaced'});
                         expect(stringResolver.resolve('this is resolved with ${someResolver}')).toEqual('this is resolved with nullReplaced');
                     });
 
                     test('should support the null resolver (value) with proper resolvers', () => {
-                        var stringResolver = new StringResolver([{pattern: 'someResolver', replacement: null}], {nullReplacement: 'nullReplaced'});
+                        let stringResolver = new StringResolver([{pattern: 'someResolver', replacement: null}], {nullReplacement: 'nullReplaced'});
                         expect(stringResolver.resolve('this is resolved with ${someResolver}')).toEqual('this is resolved with nullReplaced');
                     });
 
                     test('should support the null resolver (function) with shortcut resolvers', () => {
-                        var stringResolver = new StringResolver({someResolver: null}, {nullReplacement: () => {return 'nullReplaced';}});
+                        let stringResolver = new StringResolver({someResolver: null}, {nullReplacement: () => {return 'nullReplaced';}});
                         expect(stringResolver.resolve('this is resolved with ${someResolver}')).toEqual('this is resolved with nullReplaced');
                     });
 
                     test('should support the null resolver (function) with proper resolvers', () => {
-                        var stringResolver = new StringResolver([{pattern: 'someResolver', replacement: null}], {nullReplacement: () => {return 'nullReplaced';}});
+                        let stringResolver = new StringResolver([{pattern: 'someResolver', replacement: null}], {nullReplacement: () => {return 'nullReplaced';}});
                         expect(stringResolver.resolve('this is resolved with ${someResolver}')).toEqual('this is resolved with nullReplaced');
                     });
 
@@ -153,13 +153,13 @@
                     });
 
                     test('should throw when a resolver function throws', () => {
-                        var template = '${functionResult}',
+                        let template = '${functionResult}',
                             resolverMap = [{ pattern: 'functionResult', replacement: () => { throw Error();} }];
                         expect(() => stringResolver.resolve(template, resolverMap)).toThrow(Error);
                     });
 
                     test('should fully resolve when a resolver returns a resolver', () => {
-                        var resolverMap = {
+                        let resolverMap = {
                             resolverOne: '${resolverTwo}',
                             resolverTwo: 'resolved'
                         },
@@ -199,14 +199,14 @@
                     describe('With Default Resolvers', () => {
 
                         test('should process using default resolvers with a constant', () => {
-                            var defaultResolverMap = [{ pattern: 'a', replacement: 'a' }];
+                            let defaultResolverMap = [{ pattern: 'a', replacement: 'a' }];
 
                             expect(new StringResolver(defaultResolverMap).resolve(template, [])).toBe(resolved);
                             expect(new StringResolver(defaultResolverMap).resolve(template)).toBe(resolved);
                         });
 
                         test('should process using default resolvers with a function', () => {
-                            var defaultResolverMap = [{ pattern: 'a', replacement: identityResolver }];
+                            let defaultResolverMap = [{ pattern: 'a', replacement: identityResolver }];
 
                             expect(new StringResolver(defaultResolverMap).resolve(template, [])).toBe(resolved);
                             expect(new StringResolver(defaultResolverMap).resolve(template)).toBe(resolved);
@@ -224,7 +224,7 @@
                     });
 
                     describe('With No Default Resolvers', () => {
-                        var resolverMaps;
+                        let resolverMaps;
 
                         beforeEach(() => {
                             resolverMaps = {
@@ -246,14 +246,14 @@
                     describe('With Default Resolvers', () => {
 
                         test('should process using default resolvers with constants', () => {
-                            var defaultResolverMap = [{ pattern: 'a', replacement: 'a' }, { pattern: 'simple', replacement: 'simple' }];
+                            let defaultResolverMap = [{ pattern: 'a', replacement: 'a' }, { pattern: 'simple', replacement: 'simple' }];
 
                             expect(new StringResolver(defaultResolverMap).resolve(template, [])).toBe(resolved);
                             expect(new StringResolver(defaultResolverMap).resolve(template)).toBe(resolved);
                         });
 
                         test('should process using default resolvers with functions', () => {
-                            var defaultResolverMap = [{ pattern: 'a', replacement: identityResolver }, { pattern: 'simple', replacement: identityResolver }];
+                            let defaultResolverMap = [{ pattern: 'a', replacement: identityResolver }, { pattern: 'simple', replacement: identityResolver }];
 
                             expect(new StringResolver(defaultResolverMap).resolve(template, [])).toBe(resolved);
                             expect(new StringResolver(defaultResolverMap).resolve(template)).toBe(resolved);
@@ -292,14 +292,14 @@
                     describe('With Default Resolvers', () => {
 
                         test('should process with embedded an constant', () => {
-                            var defaultResolverMap = [{ pattern: 'an', replacement: 'an' }, { pattern: 'n', replacement: 'n' }];
+                            let defaultResolverMap = [{ pattern: 'an', replacement: 'an' }, { pattern: 'n', replacement: 'n' }];
 
                             expect(new StringResolver(defaultResolverMap).resolve(template, [])).toBe(resolved);
                             expect(new StringResolver(defaultResolverMap).resolve(template)).toBe(resolved);
                         });
 
                         test('should process with an embedded function', () => {
-                            var defaultResolverMap = [{ pattern: 'an', replacement: identityResolver }, { pattern: 'n', replacement: identityResolver }];
+                            let defaultResolverMap = [{ pattern: 'an', replacement: identityResolver }, { pattern: 'n', replacement: identityResolver }];
 
                             expect(new StringResolver(defaultResolverMap).resolve(template, [])).toBe(resolved);
                             expect(new StringResolver(defaultResolverMap).resolve(template)).toBe(resolved);
@@ -316,12 +316,12 @@
         describe('Resolved Bugs', () => {
 
             test('should process 0 as a resolver', () => {
-                var stringResolver = new StringResolver();
+                let stringResolver = new StringResolver();
                 expect(stringResolver.resolve('${r}', [{ pattern: 'r', replacement: 0 }])).toBe('0');
             });
 
             test('should support the undefined resolver (value), with proper resolvers', () => {
-                var template = 'this is resolved with ${someResolver}',
+                let template = 'this is resolved with ${someResolver}',
                     resolverMap = [{pattern: 'someResolver', misspelledreplacement: undefined}],
                     stringResolver = new StringResolver(null, {undefinedReplacement: 'undefinedReplaced'});
                 expect(() => stringResolver.resolve(template, resolverMap)).toThrow();

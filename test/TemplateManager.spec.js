@@ -1,10 +1,9 @@
-(() => {
-    'use strict';
+import { TemplateManager } from '../src/TemplateManager';
 
-    const TemplateManager = require('../src/TemplateManager');
+(() => {
 
     describe('Template Manager', () => {
-        var templateManager;
+        let templateManager;
 
         describe('Lifecycle', () => {
 

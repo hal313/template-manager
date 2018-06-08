@@ -1,13 +1,13 @@
-(() => {
+import { CommonUtil } from '../src/CommonUtil';
 
-    const CommonUtil = require('../src/CommonUtil');
+(() => {
 
     describe('CommonUtil', () => {
 
         describe('Lifecycle', () => {
 
             test('CommonUtil should exist as a global', () => {
-                expect(CommonUtil).toEqual(expect.any(Object));
+                expect(CommonUtil).toEqual(expect.any(Function));
             });
 
         });
@@ -21,7 +21,7 @@
                 });
 
                 test('should iterate through an array', () => {
-                    var target = ['one', 'two', 'three'],
+                    let target = ['one', 'two', 'three'],
                         loopCount = 0;
 
                     CommonUtil.forEach(target, (item, index) => {
@@ -39,7 +39,7 @@
                 });
 
                 test('should iterate through an object', () => {
-                    var target = {
+                    let target = {
                         one: 'once',
                         two: 'twice',
                         three: 'thrice'
@@ -69,47 +69,47 @@
                 });
 
                 test('should return an empty object when no parameters are passed', () => {
-                    var merged = CommonUtil.merge();
+                    let merged = CommonUtil.merge();
                     expect(merged).toEqual({});
                 });
 
                 test('should return an empty object when undefined is passed', () => {
-                    var merged = CommonUtil.merge(undefined);
+                    let merged = CommonUtil.merge(undefined);
                     expect(merged).toEqual({});
                 });
 
                 test('should return an empty object when null is passed', () => {
-                    var merged = CommonUtil.merge(null);
+                    let merged = CommonUtil.merge(null);
                     expect(merged).toEqual({});
                 });
 
                 test('should merge a simple object', () => {
-                    var merged = CommonUtil.merge({a: 'a'});
+                    let merged = CommonUtil.merge({a: 'a'});
                     expect(merged).toEqual({a: 'a'});
                 });
 
                 test('should merge two simple objects', () => {
-                    var merged = CommonUtil.merge({a: 'a'}, {b: 'b'});
+                    let merged = CommonUtil.merge({a: 'a'}, {b: 'b'});
                     expect(merged).toEqual({a: 'a', b: 'b'});
                 });
 
                 test('should merge three simple objects', () => {
-                    var merged = CommonUtil.merge({a: 'a'}, {b: 'b'}, {c: 'c'});
+                    let merged = CommonUtil.merge({a: 'a'}, {b: 'b'}, {c: 'c'});
                     expect(merged).toEqual({a: 'a', b: 'b', c: 'c'});
                 });
 
                 test('should merge multiple simple objects, ignoring undefined and null', () => {
-                    var merged = CommonUtil.merge({a: 'a'}, undefined, {b: 'b'}, null, {c: 'c'});
+                    let merged = CommonUtil.merge({a: 'a'}, undefined, {b: 'b'}, null, {c: 'c'});
                     expect(merged).toEqual({a: 'a', b: 'b', c: 'c'});
                 });
 
                 test('should merge with overwrite', () => {
-                    var merged = CommonUtil.merge({a: 'a', b: 'b', c: 'c'}, {b: 'bee'});
+                    let merged = CommonUtil.merge({a: 'a', b: 'b', c: 'c'}, {b: 'bee'});
                     expect(merged).toEqual({a: 'a', b: 'bee', c: 'c'});
                 });
 
                 test('should merge with multiple overwrite', () => {
-                    var merged = CommonUtil.merge({a: 'a', b: 'b', c: 'c'}, {b: 'bee'}, {b: 'bae'});
+                    let merged = CommonUtil.merge({a: 'a', b: 'b', c: 'c'}, {b: 'bee'}, {b: 'bae'});
                     expect(merged).toEqual({a: 'a', b: 'bae', c: 'c'});
                 });
 

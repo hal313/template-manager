@@ -25,8 +25,9 @@
     "test": "jest"
   },
   "jest": {
-    "collectCoverage": true,
-    "coverageDirectory": "reports",
+    "_collectCoverage": true,
+    "collectCoverage": false,
+    "coverageDirectory": "build/reports",
     "coverageThreshold": {
       "global": {
         "branches": 80,
@@ -52,24 +53,18 @@
   ],
   "keywords": [
     "template",
+    "resolver",
     "javascript"
   ],
   "devDependencies": {
-    "chai": "^4.1.2",
-    "eslint-config-standard": "^11.0.0",
-    "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "^3.1.0",
-    "grunt": "^1.0.2",
-    "grunt-bump": "^0.8.0",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^23.0.1",
+    "babel-preset-env": "^1.7.0",
+    "grunt": "^1.0.3",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^1.1.0",
     "grunt-contrib-uglify": "^3.3.0",
-    "grunt-contrib-watch": "^1.0.1",
-    "grunt-mocha": "^1.0.4",
-    "grunt-open": "^0.2.3",
-    "mocha": "^5.1.1"
-  },
-  "dependencies": {}
+    "jest": "^23.1.0",
+    "regenerator-runtime": "^0.11.1"
+  }
 }

@@ -1,15 +1,6 @@
 /*global module:true */
 
 
-// TODO: CommonUtil e2e tests
-// TODO: Mocha Chrome headless?
-// TODO: Clean up targets
-// TODO: NPM scripts
-// TODO: Implement code coverage
-// TODO: https://www.npmjs.com/package/package-json-to-readme
-// TODO: https://docs.npmjs.com/files/package.json
-// TODO: Include author in default resolvers
-
 // TODO: Single var
 // TODO: Remove _
 
