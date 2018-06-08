@@ -1,9 +1,6 @@
-/* global afterEach,beforeEach,describe,test,expect: true */
-
-var StringResolver = require('../src/StringResolver');
-
 (() => {
-    'use strict';
+
+    const StringResolver = require('../src/StringResolver');
 
     describe('StringResolver', () => {
 

@@ -1,9 +1,6 @@
-/* global describe,test,expect: true */
-
-var CommonUtil = require('../src/CommonUtil');
-
 (() => {
-    'use strict';
+
+    const CommonUtil = require('../src/CommonUtil');
 
     describe('CommonUtil', () => {
 
@@ -197,57 +194,6 @@ var CommonUtil = require('../src/CommonUtil');
                 });
 
             });
-
-            // TODO: normalizeResolverDefinitions()
-
-
-
-            // describe('asResolverMap()', () => {
-            //
-            //     test('should create an empty resolver map from undefined', () => {
-            //         var resolverMap = stringResolver.asResolverMap(undefined);
-            //         expect(Array.isArray(resolverMap)).toBe(true);
-            //         expect(resolverMap.length).toBe(0);
-            //     });
-            //
-            //     test('should create an empty resolver map from null', () => {
-            //         var resolverMap = stringResolver.asResolverMap(null);
-            //         expect(Array.isArray(resolverMap)).toBe(true);
-            //         expect(resolverMap.length).toBe(0);
-            //     });
-            //
-            //     test('should create an empty resolver map from an empty object', () => {
-            //         var resolverMap = stringResolver.asResolverMap({});
-            //         expect(Array.isArray(resolverMap)).toBe(true);
-            //         expect(resolverMap.length).toBe(0);
-            //     });
-            //
-            //     test('should create a resolver map from an object', () => {
-            //         var pojo = {
-            //             stringValue: 'value',
-            //             intValue: 1,
-            //             floatValue: 2.2
-            //         };
-            //         var resolverMap = stringResolver.asResolverMap(pojo);
-            //
-            //         expect(Array.isArray(resolverMap)).toBe(true);
-            //         expect(resolverMap.length).toBe(Object.getOwnPropertyNames(pojo).length);
-            //     });
-            //
-            //     test('should resolve correctly using a generated resolver map', () => {
-            //         var pojo = {
-            //             stringValue: 'value',
-            //             intValue: 1,
-            //             floatValue: 2.2
-            //         }, result = stringResolver.resolve(
-            //             '${stringValue}:${intValue}:${floatValue}',
-            //             stringResolver.asResolverMap(pojo)
-            //         );
-            //
-            //         expect(result).toBe(pojo.stringValue + ':' + pojo.intValue + ':' + pojo.floatValue);
-            //     });
-            //
-            // });
 
         });
 

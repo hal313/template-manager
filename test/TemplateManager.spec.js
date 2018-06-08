@@ -1,10 +1,7 @@
-/* global beforeEach,describe,test,expect: true */
-
-var TemplateManager = require('../src/TemplateManager');
-
 (() => {
     'use strict';
 
+    const TemplateManager = require('../src/TemplateManager');
 
     describe('Template Manager', () => {
         var templateManager;
