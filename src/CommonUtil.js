@@ -1,17 +1,14 @@
-// Build User: ${build.user}
-// Version: ${build.version}
-// Build Date: ${build.date}
-
-// TODO: es6
-// TODO: jsdoc
-
-export class CommonUtil {
-
-};
+// [Common] Build User: ${build.user}
+// [Common] Version:    ${build.version}
+// [Common] Build Date: ${build.date}
 
 let isResolverDefinition = (definition) => {
     return !!definition && definition.hasOwnProperty('pattern') && definition.hasOwnProperty('replacement');
 };
+
+export class CommonUtil {
+
+}
 
 CommonUtil.forEach = (collection, callback) => {
     if (Array.isArray(collection)) {
@@ -27,6 +24,7 @@ CommonUtil.merge = (...objects) => {
     let mergedObject = {};
     let sources;
     let source;
+
 
     if (!!objects) {
         sources = Array.prototype.slice.call(objects);

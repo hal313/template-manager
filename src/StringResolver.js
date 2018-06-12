@@ -1,18 +1,6 @@
-// Build User:  ${build.user}
-// Version:     ${build.version}
-// Build Date:  ${build.date}
-
-// TODO: es6
-// TODO: jsdoc
-
-// TODO: FEATURE: Allow pass in options during resolve()
-// TODO: FEATURE: Allow escape (figure out in the regular expression?)
-
-// TODO: FEATURE: Option: Check for balance - this is hard, maybe impossible; if a resolver resolves part of a resolver
-//         a: ${some_resolver_prefix_
-//         b: rest_of_resolver}
-//         c: some_resolver_prefix_rest_of_resolver
-//         After resolving just a, there will be unbalanced resolvers; but only for one loop
+// [StringResolver] Build User: ${build.user}
+// [StringResolver] Version:    ${build.version}
+// [StringResolver] Build Date: ${build.date}
 
 import { CommonUtil } from './CommonUtil';
 
@@ -55,55 +43,56 @@ let processLoop = (template, resolverMap, options) => {
 
     return processedTemplateString;
 };
+
 export class StringResolver {
 
 
     constructor(defaultResolverMap, options) {
 
-        this.defaultResolverMap = CommonUtil.normalizeResolverDefinitions(defaultResolverMap);
+        let _defaultResolverMap = CommonUtil.normalizeResolverDefinitions(defaultResolverMap);
 
-        this.options = CommonUtil.merge({
+        let _options = CommonUtil.merge({
             nullReplacement: StringResolver.identityResolver,
             undefinedReplacement: StringResolver.identityResolver
         }, options);
 
-    };
+        this.resolve = (template, resolverMap) => {
+            let processedTemplateString = template;
+            let processedLoopResult;
+            let internalResolverMap = [];
 
-    resolve (template, resolverMap) {
-        let processedTemplateString = template;
-        let processedLoopResult;
-        let internalResolverMap = [];
-
-        // Return the empty string if the template is not defined
-        if (!CommonUtil.isDefined(template)) {
-            return template;
-        }
-
-        // Populate the default resolvers
-        if (this.defaultResolverMap) {
-            CommonUtil.forEach(this.defaultResolverMap, (resolver) => {
-                internalResolverMap.push(resolver);
-            });
-        }
-
-        // Populate the resolver map
-        if (!!resolverMap) {
-            CommonUtil.forEach(CommonUtil.normalizeResolverDefinitions(resolverMap), (resolver) => {
-                internalResolverMap.push(resolver);
-            });
-        }
-        // Only process if there are resolvers!
-        if (internalResolverMap.length) {
-            // Loop through until no more resolutions take place
-            while (processedTemplateString !== (processedLoopResult = processLoop(processedTemplateString, internalResolverMap, this.options))) {
-                processedTemplateString = processedLoopResult;
+            // Return the empty string if the template is not defined
+            if (!CommonUtil.isDefined(template)) {
+                return template;
             }
-        }
 
-        return processedTemplateString;
-    };
+            // Populate the default resolvers
+            if (_defaultResolverMap) {
+                CommonUtil.forEach(_defaultResolverMap, (resolver) => {
+                    internalResolverMap.push(resolver);
+                });
+            }
 
-};
+            // Populate the resolver map
+            if (!!resolverMap) {
+                CommonUtil.forEach(CommonUtil.normalizeResolverDefinitions(resolverMap), (resolver) => {
+                    internalResolverMap.push(resolver);
+                });
+            }
+            // Only process if there are resolvers!
+            if (internalResolverMap.length) {
+                // Loop through until no more resolutions take place
+                while (processedTemplateString !== (processedLoopResult = processLoop(processedTemplateString, internalResolverMap, _options))) {
+                    processedTemplateString = processedLoopResult;
+                }
+            }
+
+            return processedTemplateString;
+        };
+
+    }
+
+}
 
 StringResolver.identityResolver = (key) => {
     return '${' + key + '}';
