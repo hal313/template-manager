@@ -72,7 +72,6 @@ module.exports = function(grunt) {
         jshint: {
             options: {
                 reporter: require('jshint-stylish'),
-                // reporter: 'checkstyle',
                 jshintrc: true
             },
             all: ['Gruntfile.js', 'src/*.js', 'test/**/*.js']
@@ -102,9 +101,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
+    // Register tasks
     grunt.registerTask('build', ['jshint', 'copy', 'transpile', 'uglify']);
     grunt.registerTask('build:watch', ['build', 'watch:build']);
-
     grunt.registerTask('transpile', 'Transpiles to ES5', function () {
         var done = this.async();
 
