@@ -1,56 +1,89 @@
 {
-    "name": "template-manager",
-    "version": "1.1.7",
-    "description": "A JavaScript library to manage templates",
-    "homepage": "https://github.com/hal313/template-manager",
-    "bugs": {
-        "url": "https://github.com/hal313/template-manager/issues",
-        "email": "john-github@rmdashrf.org"
+  "name": "template-manager",
+  "version": "2.0.0",
+  "description": "A JavaScript library to manage templates",
+  "homepage": "https://github.com/hal313/template-manager",
+  "bugs": {
+    "url": "https://github.com/hal313/template-manager/issues",
+    "email": "john-github@rmdashrf.org"
+  },
+  "license": "MIT",
+  "main": "dist/TemplateManager.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hal313/template-manager.git"
+  },
+  "author": {
+    "name": "John Ghidiu",
+    "email": "john-github@rmdashrf.org",
+    "url": "https://github.com/hal313"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "build": "grunt build",
+    "build:watch": "grunt build:watch",
+    "dev": "concurrently \"npm run test:watch\" \"npm run build:watch\""
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "build/reports",
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
     },
-    "license": "MIT",
-    "main": "dist/TemplateManager.js",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/hal313/template-manager.git"
-    },
-    "author": {
-        "name": "John Ghidiu",
-        "email": "john-github@rmdashrf.org",
-        "url": "https://github.com/hal313"
-    },
-    "engines": {
-        "node": ">=0.10.0"
-    },
-    "scripts": {
-        "test": "grunt test-headless-all"
-    },
-    "files": [
-        "dist",
-        "spec",
-        "src",
-        "test",
-        ".bowerrc",
-        ".jshintrc",
-        ".travis.yml",
-        ".yo-rc.json",
-        "Gruntfile.js",
-        "LICENSE",
-        "package.json",
-        "README.md",
-        "replacements.json"
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "dist/**/*.js",
+      "!**/node_modules/**",
+      "!**/test/**"
     ],
-    "keywords": [
-        "template",
-        "javascript"
+    "roots": [
+      "src",
+      "test"
     ],
-    "devDependencies": {
-        "grunt": "^0.4.5",
-        "grunt-contrib-watch": "^0.6.1",
-        "grunt-bump": "0.0.16",
-        "grunt-open": "^0.2.3",
-        "grunt-contrib-uglify": "^0.6.0",
-        "grunt-contrib-jshint": "^0.10.0",
-        "grunt-contrib-copy": "^0.7.0",
-        "grunt-mocha": "^0.4.11"
-    }
+    "resetModules": true
+  },
+  "files": [
+    "dist",
+    "spec",
+    "src",
+    "test",
+    ".jshintrc",
+    ".travis.yml",
+    "Gruntfile.js",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "replacements.json"
+  ],
+  "keywords": [
+    "template",
+    "resolver",
+    "javascript"
+  ],
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-jest": "^23.0.1",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.7.0",
+    "concurrently": "^3.5.1",
+    "grunt": "^1.0.3",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-uglify": "^3.3.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "jest": "^23.1.0",
+    "jshint-stylish": "^2.2.1",
+    "regenerator-runtime": "^0.11.1",
+    "rollup": "^0.60.2",
+    "rollup-plugin-babel": "^3.0.4"
+  }
 }

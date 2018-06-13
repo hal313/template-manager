@@ -1,280 +1,610 @@
-// Build User: jrg2
-// Version: 1.1.6
-// Build Date: Thu Jul 30 2015 22:10:21 GMT-0400 (Eastern Daylight Time)
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (factory((global.TemplateManager = {})));
+}(this, (function (exports) { 'use strict';
 
-// TODO: Allow escape (this will have to be figured out in the regular expression)
-// TODO: jsdoc
-// TODO: .add() should take in an optional third argument (resolver map)
-// TODO: Remove jquery dep
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
 
-// TODO: Add getNames()
-// TODO: Add empty()
-// TODO: Remove jquery
-// TODO: Fix broken 0 regex
-
-(function(root, factory) {
-    'use strict';
-
-    // Try to define a console object
-    (function(){
-        try {
-            if (!console && ('undefined' !== typeof window)) {
-                // Define the console if it does not exist
-                if (!window.console) {
-                    window.console = {};
-                }
-
-                // Union of Chrome, FF, IE, and Safari console methods
-                var consoleFunctions = [
-                    'log', 'info', 'warn', 'error', 'debug', 'trace', 'dir', 'group',
-                    'groupCollapsed', 'groupEnd', 'time', 'timeEnd', 'profile', 'profileEnd',
-                    'dirxml', 'assert', 'count', 'markTimeline', 'timeStamp', 'clear'
-                ];
-                // Define undefined methods as no-ops to prevent errors
-                for (var i = 0; i < consoleFunctions.length; i++) {
-                    if (!window.console[consoleFunctions[i]]) {
-                        window.console[consoleFunctions[i]] = function() {};
-                    }
-                }
-            }
-        } catch(error) {
-            // Not much to do if there is no console
-        }
-
-    })();
-
-    // Determine the module system (if any)
-    if (typeof define === 'function' && define.amd) {
-        // AMD
-        define(factory);
-    } else {
-        // Node
-        if (typeof exports !== 'undefined') {
-            module.exports = factory();
-        } else {
-            // None
-            root.TemplateManager = factory();
-        }
+  var classCallCheck = function (instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
     }
+  };
 
-})(this, function() {
-    'use strict';
+  // [Common] Build User: User
+  // [Common] Version:    2.0.0
+  // [Common] Build Date: Tue Jun 12 2018 22:41:33 GMT-0400 (Eastern Daylight Time)
 
-    // This is a regex cache for all of the instances of TemplateManager (like a private static member)
-    var _getRegex = function(regex) {
-        // Memoize the cache
-        if (!_getRegex.cache) {
-            _getRegex.cache = {};
-        }
+  /**
+   * Determines if an object is likely a resolver definition. A resolver definition will have two properties:
+   *   pattern - the string pattern
+   *   replacement - the replacement value (function or object/string)
+   *
+   * @param {Object} definition Determines if a definition is likely a resolver definition.
+   * @return {boolean} true if "definition" is a resolver definition.
+   */
+  var isResolverDefinition = function isResolverDefinition(definition) {
+      return !!definition && definition.hasOwnProperty('pattern') && definition.hasOwnProperty('replacement');
+  };
 
-        if (!_getRegex.cache[regex]) {
-            _getRegex.cache[regex] = new RegExp(regex, 'gi');
-        }
+  /**
+   * Common utilities shared between all classes in this module.
+   */
+  var CommonUtil = function CommonUtil() {
+      classCallCheck(this, CommonUtil);
+  };
 
-        return _getRegex.cache[regex];
-    };
+  /**
+   * Iterates over a collection, invoking a callback for each item in the collection.
+   *
+   * CommonUtil.forEach([1, 2, 3], function (item, index) {});
+   * // Or:
+   * CommonUtil.forEach({someName: 'someValue'}, function (value, name) {});
+   *
+   * @param {Object|Array} collection A collection to iterate over
+   * @param {function} callback the callback function for each item in the collection
+   */
+  CommonUtil.forEach = function (collection, callback) {
+      if (Array.isArray(collection)) {
+          collection.forEach(callback);
+      } else {
+          Object.getOwnPropertyNames(collection).forEach(function onItem(propertyName) {
+              callback(collection[propertyName], propertyName);
+          });
+      }
+  };
 
-    var _forEach = function(collection, func) {
-        var index  = -1,
-            length = collection ? collection.length : 0
-            ;
+  /**
+   * Merges objects from right to left, where the left-most item takes precedence over the right-most item.
+   *
+   * @param {Object[]} objects
+   * @return {Object} an object whose members are the result of merging all object parameters into this object
+   */
+  CommonUtil.merge = function () {
+      for (var _len = arguments.length, objects = Array(_len), _key = 0; _key < _len; _key++) {
+          objects[_key] = arguments[_key];
+      }
 
-        while (++index < length) {
-            func(index, collection[index]);
-        }
-    };
+      var mergedObject = {};
+      var sources = void 0;
+      var source = void 0;
 
-    function _merge(object1, object2){
-        var mergedObject = {};
-        for (var attrname1 in object1) { mergedObject[attrname1] = object1[attrname1]; }
-        for (var attrname2 in object2) { mergedObject[attrname2] = object2[attrname2]; }
-        return mergedObject;
-    }
+      if (!!objects) {
+          sources = Array.prototype.slice.call(objects);
 
-    var TemplateManager = function(defaultResolverMap, options) {
+          for (var i = 0; i < sources.length; i++) {
+              source = sources[i];
+              if (!!source) {
+                  for (var attributeName in source) {
+                      mergedObject[attributeName] = source[attributeName];
+                  }
+              }
+          }
+      }
 
-        if (!(this instanceof TemplateManager)) {
-            return new TemplateManager(defaultResolverMap, options);
-        }
+      return mergedObject;
+  };
 
-        var _options = _merge({scriptType: 'text/x-template-manager'}, options);
+  /**
+   * Utility function to check to see if a value is defined. Note that the number 0 is defined, as is the empty string.
+   *
+   * @param {*} value the value to test
+   * @return true if the value is not null and not undefined
+   */
+  CommonUtil.isDefined = function (value) {
+      return undefined !== value && null !== value;
+  };
 
-        // The template cache
-        var _templateCache = [];
+  /**
+   * Determines if a value is nil (null, undefined or the empty string).
+   *
+   * @param {*} value the value to test
+   * @return true if the value is not defined OR the value is the empty string
+   */
+  CommonUtil.isNil = function (value) {
+      // Return true if:
+      //  value is NOT defined
+      //  OR value IS defined AND it is the empty string (when trimmed)
+      return !CommonUtil.isDefined(value) || CommonUtil.isDefined(value) && '' === value.toString().trim();
+  };
 
-        // Flag to determine if the templates have been loaded from the HTML page
-        var _hasLoaded = false;
+  /**
+   * Creates a valid resolver definition. A resolver defintion looks like:
+   * {
+   *   pattern: <string>,
+   *   replacement: <string|() => string>
+   * }
+   *
+   * @param {string} pattern the pattern to use for the resolver definition
+   * @param {string|function} replacement a replacement for the resolver function
+   * @return {Object} a resolver definition, which contains both a "pattern" as well as a "replacement" member
+   */
+  CommonUtil.createResolverDefinition = function (pattern, replacement) {
+      if ('string' !== typeof pattern) {
+          // If a classic definition is used but is incorrectly specified, this is what happens:
+          // resolve(template, [{pattern: 'somePattern', replacement_spelled_wrong: 'someValue'}]);
+          // Since normalizeResolverDefinition will NOT view the element as a definition, then
+          // createResolverDefinition will be called with:
+          //   0, { pattern: 'someResolver', replacement_spelled_wrong: undefined }
+          // Clearly this is not intended!
+          //
+          // This could be avoided by easing up the check is isResolverDefinition to only check "pattern"
+          //   return !!definition && definition.hasOwnProperty('pattern');
+          //
+          throw new Error('\'pattern\' must be a string, not \'' + (typeof pattern === 'undefined' ? 'undefined' : _typeof(pattern)) + '\' (\'' + pattern + '\'); this error may occur if using an incomplete classic resolver definition - be sure all classic resolver definitions have both a \'pattern\' and \'replacement\'.');
+      }
+      return {
+          pattern: pattern,
+          replacement: replacement
+      };
+  };
+
+  /**
+   * Normalizes a resolver definition.
+   *
+   * @param {Object|string} definitionOrPattern a resolver definition or a string
+   * @param {string|function} replacement the replacement value (or function)
+   * @return {Object} a resolver definition, which contains both a "pattern" as well as a "replacement" member
+   */
+  CommonUtil.normalizeResolverDefinition = function (definitionOrPattern, replacement) {
+      if (isResolverDefinition(definitionOrPattern)) {
+          // Duck type for 'classic' resolvers
+          return CommonUtil.createResolverDefinition(definitionOrPattern.pattern, definitionOrPattern.replacement);
+      } else {
+          // Reverse the parameters (this is an object with key/value parings)
+          return CommonUtil.createResolverDefinition(definitionOrPattern, replacement);
+      }
+  };
+
+  /**
+   * Normalizes a collection of resolver definitions.
+   *
+   * @param {Object[]} definitions a collection of resolver definitions
+   * @return {Object[]} an array of normalized resolver definitions
+   */
+  CommonUtil.normalizeResolverDefinitions = function (definitions) {
+      var resolverDefinitions = [];
+
+      if (!!definitions) {
+          CommonUtil.forEach(definitions, function (definitionOrReplacement, indexOrPattern) {
+              if (isResolverDefinition(definitionOrReplacement)) {
+                  resolverDefinitions.push(CommonUtil.normalizeResolverDefinition(definitionOrReplacement));
+              } else {
+                  resolverDefinitions.push(CommonUtil.normalizeResolverDefinition(indexOrPattern, definitionOrReplacement));
+              }
+          });
+      }
+
+      return resolverDefinitions;
+  };
+
+  // Burn in the version
+  CommonUtil.version = '2.0.0';
+
+  // [StringResolver] Build User: User
+
+  /**
+   * Normalizes a value. If the value is a function, execute the function and return the value. Otherwise, return the value.
+   *
+   * If "value" is a function, it will be executed recursively until a non-function is returned. The "value" function will be passed
+   * the "pattern" value during execution.
+   *
+   * @param {Function|string} value the value to normalize
+   * @param {string} pattern the pattern to resolve to
+   * @return {string} a resolved value
+   */
+  var normalizeValue = function normalizeValue(value, pattern) {
+      if ('function' === typeof value) {
+          return normalizeValue(value(pattern));
+      } else {
+          return value;
+      }
+  };
+
+  /**
+   * Gets a RegExp suitable for replacing in a template. The RegExp will be: ${pattern}
+   *
+   * @param {string} pattern the pattern to get the RegExp for
+   * @return {RegExp} a regular expression object that replaces "${pattern}"
+   */
+  var getRegex = function getRegex(pattern) {
+      return new RegExp('\\${' + pattern + '}', 'gi');
+  };
+
+  /**
+   * Process a template with resolvers.
+   *
+   * @param {string} template the template to resolve
+   * @param {Object} resolverMap the resolver map
+   * @param {Object} options options to use during resolution
+   * @return {string} a string whose resolvers has been resolved based on the resolved map
+   */
+  var resolveTemplate = function resolveTemplate(template, resolverMap, options) {
+      var processedTemplateString = template;
+
+      CommonUtil.forEach(resolverMap, function (resolver) {
+
+          var regex = getRegex(resolver.pattern),
+              replacement = void 0;
+
+          // We allow functions for the replacement!
+          if ('function' === typeof resolver.replacement) {
+              replacement = resolver.replacement(resolver.pattern, template, processedTemplateString);
+          } else {
+              replacement = resolver.replacement;
+          }
+
+          // Only replace if the replacement is defined
+          if (undefined === replacement) {
+              processedTemplateString = processedTemplateString.replace(regex, normalizeValue(options.undefinedReplacement, resolver.pattern));
+          } else if (null === replacement) {
+              processedTemplateString = processedTemplateString.replace(regex, normalizeValue(options.nullReplacement, resolver.pattern));
+          } else {
+              processedTemplateString = processedTemplateString.replace(regex, replacement);
+          }
+      });
+
+      return processedTemplateString;
+  };
+
+  /**
+   * A class which resolves a string template with a map of values and/or functions. A template is a string
+   * with ${} resolvers:
+   *   "this is a ${unresolved} string"
+   *
+   * A ResolverMap is an object with key/value pairs which produce values for a resolver with the matching name:
+   *   {
+   *     unresolved: "resolved"
+   *   }
+   *
+   * When resolve(template, resolverMap) is invoked, the return value will be:
+   *   "this is a resolved string"
+   *
+   * ResolverMap values may be functions which produce either strings or other functions; the function chain
+   * will be invoked until a string is produced.
+   *
+   * Embedded resolutions are allowed:
+   *   "this is ${em${inner}ded}"
+   *   {
+   *     inner: "bed",
+   *     embedded: "embeded value"
+   *   }
+   * The first resolution will produce:
+   *   "this is ${embedded}"
+   * And the second resolution will produce:
+   *   "this is embedded value"
+   *
+   * Complex resolutions are possible, too:
+   *   "this is ${${open}${middle}${close}}"
+   *   {
+   *     open: "${",
+   *     middle: "inner",
+   *     close: "}",
+   *     inner: "a complex resolver"
+   *   }
+   * Productions:
+   *   "this is ${${inner}}" => "this is a complex resolver"
+   */
+  var StringResolver =
+
+  /**
+   * Constructor for the StringResolver.
+   *
+   * @param {Object} defaultResolverMap the default resolver map, can be undefined
+   * @param {Object} [options] Optional options for resolving
+   */
+  function StringResolver(defaultResolverMap, options) {
+      classCallCheck(this, StringResolver);
 
 
-        var _find = function(name) {
-            return _templateCache[name];
-        };
+      // The normalized resolver map
+      var _defaultResolverMap = CommonUtil.normalizeResolverDefinitions(defaultResolverMap);
 
-        var _addToCache = function(name, template) {
-            if (name) {
-                _templateCache[name] = template;
-            }
-        };
+      var _options = CommonUtil.merge({
+          nullReplacement: StringResolver.identityResolver,
+          undefinedReplacement: StringResolver.identityResolver
+      }, options);
 
-        var _add = function(name, template) {
-            _addToCache(name, template);
-            return _get(name);
-        };
+      /**
+       * Resolves a template with a resolver map.
+       *
+       * @param {string} template the template to resolve
+       * @param {Object} resolverMap the resolver map
+       * @return {string} the resolved template
+       */
+      this.resolve = function (template, resolverMap) {
+          var processedTemplateString = template;
+          var processedLoopResult = void 0;
+          var internalResolverMap = [];
 
-        var _load = function() {
-            // Get all the scripts
+          // Return the empty string if the template is not defined
+          if (!CommonUtil.isDefined(template)) {
+              return template;
+          }
 
-            if('undefined' !== typeof jQuery) {
-                var $scripts = jQuery('script');
+          // Populate the default resolvers
+          if (_defaultResolverMap) {
+              CommonUtil.forEach(_defaultResolverMap, function (resolver) {
+                  internalResolverMap.push(resolver);
+              });
+          }
 
-                // Add each template into the cache
-                $scripts.each(function(index, script) {
-                    var $script;
-                    var name;
-                    var content;
+          // Populate the resolver map
+          if (!!resolverMap) {
+              CommonUtil.forEach(CommonUtil.normalizeResolverDefinitions(resolverMap), function (resolver) {
+                  internalResolverMap.push(resolver);
+              });
+          }
+          // Only process if there are resolvers!
+          if (internalResolverMap.length) {
+              // Loop through until no more resolutions take place
+              while (processedTemplateString !== (processedLoopResult = resolveTemplate(processedTemplateString, internalResolverMap, _options))) {
+                  processedTemplateString = processedLoopResult;
+              }
+          }
 
-                    // Check to see if the script type matches the type desired
-                    if (_options.scriptType === script.type) {
-                        $script = jQuery(script);
-                        name = $script.data('name').trim();
-                        content = script.innerHTML.trim();
+          return processedTemplateString;
+      };
+  };
 
-                        if (name.length) {
-                            // Add to the cache
-                            _addToCache(name, content);
-                        } else {
-                            // Output warning (no name)
-                            console.warn('Template has no name');
-                        }
-                    }
-                });
-            } else {
-                console.log('jQuery is not available; if a DOM exists with script elements, they will not be made available');
-            }
+  /**
+   * The identity resolver returns a resolver version of the passed in value. This is useful to produce resolutions
+   * which represent the original input.
+   *
+   * @param {string} key the value to return
+   * @return {string} ${<key>}
+   */
+  StringResolver.identityResolver = function (key) {
+      return '${' + key + '}';
+  };
 
-            _hasLoaded = true;
-        };
+  // Burn in the version
+  StringResolver.version = '2.0.0';
+
+  // [TemplateManager] Build User: User
+
+  /**
+   * Gets an attribute value from an element.
+   *
+   * @param {Element} element the element to get the attribute from
+   * @param {string} name the name of the attribute; it is not necessary to prefix "data-" on the attribute
+   * @return {string} the value for the attribute
+   */
+  var getAttribute = function getAttribute(element, name) {
+      return element.getAttribute(name) || element.getAttribute('data-' + name);
+  };
+
+  /**
+   * Validates a template name, throwing an Error if the template name is not valid. Valid template names
+   * must not be null, undefined or the empty string.
+   *
+   * @param {string} name the template name to validate
+   * @return the passed in name
+   * @throws {Error} if the template name is invalid (null, undefined, '')
+   */
+  var validateTemplateName = function validateTemplateName(name) {
+      if (CommonUtil.isNil(name)) {
+          throw new Error('Invalid template name: \'' + name + '\'/');
+      }
+      // For chaining!
+      return name;
+  };
+
+  /**
+   * A class to manage templates. Templates can be managed by code via add/get/remove. Further, templates specified
+   * in the DOM may be imported via the load() function. A template can be specified in the DOM like so:
+   *
+   * <script type="text/x-template-manager" data-name="someTemplate">
+   *   This is a template with ${resolvers}
+   * </script>
+   *
+   * Template objects (returned from get()) look like:
+   * {
+   *   raw: () => string, // Returns the original template
+   *   process: (resolverMap) => string // Resolves the template
+   * }
+   *
+   */
+  var TemplateManager =
+
+  /**
+   * Constructor for the TemplateManager.
+   *
+   * Options:
+   * {
+   *   // The type attribute for scripts to load from the DOM
+   *   scriptType: 'text/x-template-manager'
+   * }
+   *
+   * @param {Object} defaultResolverMap the default resolver map to use with all templates
+   * @param {Object} [options] options for the TemplateManager instance
+   */
+  function TemplateManager(defaultResolverMap, options) {
+      var _this = this;
+
+      classCallCheck(this, TemplateManager);
 
 
-        var _remove = function(name) {
-            delete _templateCache[name];
-        };
+      // The options
+      var _options = CommonUtil.merge({ scriptType: 'text/x-template-manager' }, options);
 
-        var _raw = function(templateName, template) {
-            return template || '';
-        };
+      // The template cache
+      var templateCache = {};
 
-        var _processLoop = function(template, resolverMap) {
-            var processedTemplateString = template;
+      /**
+       *
+       * @param {string} name Gets a template by name.
+       * @return {string} the template
+       */
+      var getTemplate = function getTemplate(name) {
+          if (!_this.hasTemplate(validateTemplateName(name))) {
+              throw new Error('Template \'' + name + '\' does not exist');
+          }
 
-            _forEach(resolverMap, function(index, resolver) {
-                var regex = _getRegex('\\${' + resolver.regex + '}');
-                var replacement;
+          return templateCache[name];
+      };
 
-                // We allow functions for the replacement!
-                if ('function' === typeof resolver.replacement) {
-                    try {
-                        replacement = resolver.replacement(resolver.regex, template, processedTemplateString);
-                    } catch(error) {
-                        console.error('Error while calculating replacement for', resolver.regex, error);
-                    }
-                } else {
-                    replacement = resolver.replacement;
-                }
+      /**
+       * Adds a template into the cache.
+       *
+       * @param {string} name the template name
+       * @param {string} template the template
+       */
+      var addTemplateToCache = function addTemplateToCache(name, template) {
+          templateCache[validateTemplateName(name)] = template;
+      };
 
-                // Only replace if the replacement is defined
-                if (undefined !== replacement && null !== replacement) {
-                    processedTemplateString = processedTemplateString.replace(regex, replacement);
-                }
-            });
+      /**
+       * Gets a template object with "raw" and "process" functions.
+       *
+       * @param {string} name the name of the template to get
+       * @return {Object} a template object.
+       */
+      this.get = function (name) {
+          // Get the template from the cache
+          var template = getTemplate(validateTemplateName(name));
 
-            return processedTemplateString;
-        };
+          return {
+              /**
+               * Processes a template.
+               *
+               * @param {Object} resolverMap the resolver map
+               * @return {string} a processed template
+               */
+              process: function process(resolverMap) {
+                  var _resolverMap = [];
 
-        var _process = function(templateName, template, resolverMap) {
-            var processedTemplateString = template;
-            var processedLoopResult;
+                  if (defaultResolverMap) {
+                      CommonUtil.forEach(defaultResolverMap, function onResolver(resolver, index) {
+                          _resolverMap.push(CommonUtil.normalizeResolverDefinition(resolver, index));
+                      });
+                  }
 
-            var _resolverMap = [];
+                  // Populate the resolver map
+                  if (resolverMap) {
+                      CommonUtil.forEach(resolverMap, function onResolver(resolver, index) {
+                          _resolverMap.push(CommonUtil.normalizeResolverDefinition(resolver, index));
+                      });
+                  }
 
-            // Return the empty string if the template is not defined
-            if (!template) {
-                return '';
-            }
+                  return new StringResolver().resolve(template, _resolverMap);
+              },
+              /**
+               * Returns the raw template.
+               *
+               * @return {string} the template
+               */
+              raw: function raw() {
+                  return template;
+              }
+          };
+      };
 
-            // Populate the default resolvers
-            if (defaultResolverMap && defaultResolverMap[templateName]) {
-                _forEach(defaultResolverMap[templateName], function(index, resolver) {
-                    _resolverMap.push(resolver);
-                });
-            }
+      /**
+       * Adds a template to the TemplateManager
+       *
+       * @param {string} name the template name
+       * @param {string} template the template
+       * @throws {Error} if the template name is not valid, the template name exists or template is not defined
+       */
+      this.add = function (name, template) {
+          var templateName = validateTemplateName(name);
 
-            // Populate the resolver map
-            if (resolverMap) {
-                _forEach(resolverMap, function(index, resolver) {
-                    _resolverMap.push(resolver);
-                });
-            }
+          if (_this.hasTemplate(templateName)) {
+              throw new Error('Duplicate template name \'' + name + '\'');
+          }
 
-            // Only process if there are resolvers!
-            if (_resolverMap.length) {
-                // Loop through until no more resolutions take place
-                while (processedTemplateString !== (processedLoopResult = _processLoop(processedTemplateString, _resolverMap))) {
-                    processedTemplateString = processedLoopResult;
-                }
-            }
+          if (!CommonUtil.isDefined(template)) {
+              throw new Error('Template must be defined');
+          }
 
-            return processedTemplateString;
-        };
+          addTemplateToCache(templateName, template);
+          return _this.get(templateName);
+      };
 
-        var _get = function(name) {
-            var rawTemplate;
+      /**
+       * Loads templates from the DOM into the TemplateManager.
+       *
+       * @param {Element} [rootElement] the element to load from
+       */
+      this.load = function (rootElement) {
+          // Get all the script elements
+          var scriptElements = (rootElement || document).getElementsByTagName('script');
 
-            if (!_hasLoaded) {
-                _load();
-            }
+          // Add each template into the cache
+          CommonUtil.forEach(scriptElements, function (scriptElement, index) {
+              var name = void 0,
+                  content = void 0;
 
-            // Get the template from the cache
-            rawTemplate = _find(name);
+              // Check to see if the script type matches the type desired
+              if (_options.scriptType === scriptElement.type) {
+                  // Get the name
+                  name = getAttribute(scriptElement, 'name');
+                  // Get the content
+                  content = scriptElement.innerHTML.trim();
 
-            // If the template is not found in the cache, return null
-            if (undefined === rawTemplate || null === rawTemplate) {
-                console.error('Template \'%s\' does not exist', name);
-            }
-            return {
-                process: function(resolverMap) {
-                    return _process(name, rawTemplate, resolverMap);
-                },
-                raw: function() {
-                    return _raw(name, rawTemplate);
-                }
-            };
+                  validateTemplateName(name);
+                  // Add to the cache
+                  addTemplateToCache(name, content);
+              }
+          });
+      };
 
-        };
+      /**
+       * Removes a template from the TemplateManager.
+       *
+       * @param {string} name the template name to remove
+       */
+      this.remove = function (name) {
+          delete templateCache[validateTemplateName(name)];
+      };
 
-        var _asResolverMap = function asResolverMap(pojo) {
-            var resolverMap = [];
-            _forEach(Object.getOwnPropertyNames(pojo), function forEach(index, name) {
-                resolverMap.push( {
-                    regex: name,
-                    replacement: pojo[name]
-                });
-            });
-            return resolverMap;
-        };
+      /**
+       * Gets an array of template names.
+       *
+       * @returns {string[]} an array of template names managed by this TemplateManager
+       */
+      this.getTemplateNames = function () {
+          var names = [];
 
-        return {
-            load: _load,
-            get: _get,
-            add: _add,
-            remove: _remove,
-            asResolverMap: _asResolverMap
-        };
+          CommonUtil.forEach(templateCache, function (value, name) {
+              names.push(name);
+          });
 
-    };
+          return names;
+      };
 
-    // Place the version as a member in the function
-    TemplateManager.version = '1.1.6';
+      /**
+       * Determines if this TemplateManager instance manages a template with the specifed name.
+       *
+       * @param {string} name determines if this TemplateManager instance has a specified template
+       * @returns {boolean} true, if this TemplateManager instance has a template with the specified name; false otherwise
+       */
+      this.hasTemplate = function (name) {
+          return CommonUtil.isDefined(templateCache[validateTemplateName(name)]);
+      };
 
-    return TemplateManager;
-});
+      /**
+       * Empties this TemplateManager instance.
+       */
+      this.empty = function () {
+          templateCache = {};
+      };
+  };
+
+  // Place the version as a member in the function
+  TemplateManager.version = '2.0.0';
+
+  // [Module] Build User: User
+
+  exports.StringResolver = StringResolver;
+  exports.TemplateManager = TemplateManager;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
