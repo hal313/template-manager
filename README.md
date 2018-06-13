@@ -145,9 +145,9 @@ This is a basic script which can be used to build and deploy (to NPM) the projec
 ```
 export VERSION=0.0.16
 git checkout -b release/$VERSION
+npm version --no-git-tag-version patch
 npm run build
 npm run test
-npm version --no-git-tag-version patch
 git add package*
 git commit -m 'Version bump'
 git add dist/
