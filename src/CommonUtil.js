@@ -2,14 +2,35 @@
 // [Common] Version:    ${build.version}
 // [Common] Build Date: ${build.date}
 
+/**
+ * Determines if an object is likely a resolver definition. A resolver definition will have two properties:
+ *   pattern - the string pattern
+ *   replacement - the replacement value (function or object/string)
+ *
+ * @param {Object} definition Determines if a definition is likely a resolver definition.
+ * @return {boolean} true if "definition" is a resolver definition.
+ */
 let isResolverDefinition = (definition) => {
     return !!definition && definition.hasOwnProperty('pattern') && definition.hasOwnProperty('replacement');
 };
 
+/**
+ * Common utilities shared between all classes in this module.
+ */
 export class CommonUtil {
 
 }
 
+/**
+ * Iterates over a collection, invoking a callback for each item in the collection.
+ *
+ * CommonUtil.forEach([1, 2, 3], function (item, index) {});
+ * // Or:
+ * CommonUtil.forEach({someName: 'someValue'}, function (value, name) {});
+ *
+ * @param {Object|Array} collection A collection to iterate over
+ * @param {function} callback the callback function for each item in the collection
+ */
 CommonUtil.forEach = (collection, callback) => {
     if (Array.isArray(collection)) {
         collection.forEach(callback);
@@ -20,11 +41,16 @@ CommonUtil.forEach = (collection, callback) => {
     }
 };
 
+/**
+ * Merges objects from right to left, where the left-most item takes precedence over the right-most item.
+ *
+ * @param {Object[]} objects
+ * @return {Object} an object whose members are the result of merging all object parameters into this object
+ */
 CommonUtil.merge = (...objects) => {
     let mergedObject = {};
     let sources;
     let source;
-
 
     if (!!objects) {
         sources = Array.prototype.slice.call(objects);
@@ -42,10 +68,22 @@ CommonUtil.merge = (...objects) => {
     return mergedObject;
 };
 
+/**
+ * Utility function to check to see if a value is defined. Note that the number 0 is defined, as is the empty string.
+ *
+ * @param {*} value the value to test
+ * @return true if the value is not null and not undefined
+ */
 CommonUtil.isDefined = (value) => {
     return undefined !== value && null !== value;
 };
 
+/**
+ * Determines if a value is nil (null, undefined or the empty string).
+ *
+ * @param {*} value the value to test
+ * @return true if the value is not defined OR the value is the empty string
+ */
 CommonUtil.isNil = (value) => {
     // Return true if:
     //  value is NOT defined
@@ -53,6 +91,17 @@ CommonUtil.isNil = (value) => {
     return !CommonUtil.isDefined(value) || (CommonUtil.isDefined(value) && '' === value.toString().trim());
 };
 
+/**
+ * Creates a valid resolver definition. A resolver defintion looks like:
+ * {
+ *   pattern: <string>,
+ *   replacement: <string|() => string>
+ * }
+ *
+ * @param {string} pattern the pattern to use for the resolver definition
+ * @param {string|function} replacement a replacement for the resolver function
+ * @return {Object} a resolver definition, which contains both a "pattern" as well as a "replacement" member
+ */
 CommonUtil.createResolverDefinition = (pattern, replacement) => {
     if ('string' !== typeof pattern) {
         // If a classic definition is used but is incorrectly specified, this is what happens:
@@ -73,6 +122,13 @@ CommonUtil.createResolverDefinition = (pattern, replacement) => {
     };
 };
 
+/**
+ * Normalizes a resolver definition.
+ *
+ * @param {Object|string} definitionOrPattern a resolver definition or a string
+ * @param {string|function} replacement the replacement value (or function)
+ * @return {Object} a resolver definition, which contains both a "pattern" as well as a "replacement" member
+ */
 CommonUtil.normalizeResolverDefinition = (definitionOrPattern, replacement) => {
     if (isResolverDefinition(definitionOrPattern)) {
         // Duck type for 'classic' resolvers
@@ -83,6 +139,12 @@ CommonUtil.normalizeResolverDefinition = (definitionOrPattern, replacement) => {
     }
 };
 
+/**
+ * Normalizes a collection of resolver definitions.
+ *
+ * @param {Object[]} definitions a collection of resolver definitions
+ * @return {Object[]} an array of normalized resolver definitions
+ */
 CommonUtil.normalizeResolverDefinitions = (definitions) => {
     let resolverDefinitions = [];
 
