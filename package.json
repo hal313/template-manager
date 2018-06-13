@@ -22,11 +22,14 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "build": "grunt build",
+    "build:watch": "grunt build:watch",
+    "dev": "concurrently \"npm run test:watch\" \"npm run build:watch\""
   },
   "jest": {
-    "_collectCoverage": true,
-    "collectCoverage": false,
+    "collectCoverage": true,
     "coverageDirectory": "build/reports",
     "coverageThreshold": {
       "global": {
@@ -36,6 +39,16 @@
         "statements": 90
       }
     },
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "dist/**/*.js",
+      "!**/node_modules/**",
+      "!**/test/**"
+    ],
+    "roots": [
+      "src",
+      "test"
+    ],
     "resetModules": true
   },
   "files": [
@@ -59,12 +72,16 @@
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-jest": "^23.0.1",
+    "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.7.0",
+    "concurrently": "^3.5.1",
     "grunt": "^1.0.3",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-jshint": "^1.1.0",
     "grunt-contrib-uglify": "^3.3.0",
+    "grunt-contrib-watch": "^1.1.0",
     "jest": "^23.1.0",
-    "regenerator-runtime": "^0.11.1"
+    "regenerator-runtime": "^0.11.1",
+    "rollup": "^0.60.2",
+    "rollup-plugin-babel": "^3.0.4"
   }
 }
