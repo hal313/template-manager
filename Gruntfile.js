@@ -69,6 +69,14 @@ module.exports = function(grunt) {
                 }
             }
         },
+        jshint: {
+            options: {
+                reporter: require('jshint-stylish'),
+                // reporter: 'checkstyle',
+                jshintrc: true
+            },
+            all: ['Gruntfile.js', 'src/*.js', 'test/**/*.js']
+        },
         copy: {
             options: {
                 process: resolveFileContent
@@ -90,10 +98,11 @@ module.exports = function(grunt) {
 
     // Load NPM tasks
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('build', ['copy', 'transpile', 'uglify']);
+    grunt.registerTask('build', ['jshint', 'copy', 'transpile', 'uglify']);
     grunt.registerTask('build:watch', ['build', 'watch:build']);
 
     grunt.registerTask('transpile', 'Transpiles to ES5', function () {
@@ -105,16 +114,13 @@ module.exports = function(grunt) {
                 babel({
                     babelrc: false,
                     exclude: 'node_modules/**',
-                    "presets": [
+                    presets: [
                         [
-                        "env",
+                        'env',
                         {
-                            "modules": false
+                            modules: false
                         }
                         ]
-                    ],
-                    "plugins": [
-                        "external-helpers"
                     ],
                     plugins: ['external-helpers'],
                     externalHelpers: false
