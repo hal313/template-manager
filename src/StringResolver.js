@@ -15,7 +15,7 @@ import { CommonUtil } from './CommonUtil';
  * @return {string} a resolved value
  */
 let normalizeValue = (value, pattern) => {
-    if ('function' === typeof value) {
+    if (CommonUtil.isFunction(value)) {
         return normalizeValue(value(pattern));
     } else {
         return value;
@@ -49,7 +49,7 @@ let resolveTemplate = (template, resolverMap, options) => {
             replacement;
 
         // We allow functions for the replacement!
-        if ('function' === typeof resolver.replacement) {
+        if (CommonUtil.isFunction(resolver.replacement)) {
             replacement = resolver.replacement(resolver.pattern, template, processedTemplateString);
         } else {
             replacement = resolver.replacement;
