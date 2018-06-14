@@ -1,5 +1,4 @@
 (() => {
-    'use strict';
 
     var StringResolver = require('../../src/StringResolver').StringResolver,
         TemplateManager = require('../../src/TemplateManager').TemplateManager,
