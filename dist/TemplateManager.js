@@ -17,8 +17,8 @@
   };
 
   // [Common] Build User: User
-  // [Common] Version:    2.1.2
-  // [Common] Build Date: Fri Jun 15 2018 00:18:26 GMT-0400 (Eastern Daylight Time)
+  // [Common] Version:    2.1.3
+  // [Common] Build Date: Fri Jun 15 2018 18:04:19 GMT-0400 (Eastern Daylight Time)
 
   /**
    * Determines if an object is likely a resolver definition. A resolver definition will have two properties:
@@ -265,7 +265,7 @@
   };
 
   // Burn in the version
-  CommonUtil.version = '2.1.2';
+  CommonUtil.version = '2.1.3';
 
   // [StringResolver] Build User: User
 
@@ -445,7 +445,7 @@
   };
 
   // Burn in the version
-  StringResolver.version = '2.1.2';
+  StringResolver.version = '2.1.3';
 
   // [TemplateManager] Build User: User
 
@@ -678,7 +678,7 @@
   };
 
   // Place the version as a member in the function
-  TemplateManager.version = '2.1.2';
+  TemplateManager.version = '2.1.3';
 
   // [Module] Build User: User
 
