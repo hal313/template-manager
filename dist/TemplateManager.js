@@ -18,7 +18,7 @@
 
   // [Common] Build User: User
   // [Common] Version:    2.1.2
-  // [Common] Build Date: Fri Jun 15 2018 00:17:50 GMT-0400 (Eastern Daylight Time)
+  // [Common] Build Date: Fri Jun 15 2018 00:18:26 GMT-0400 (Eastern Daylight Time)
 
   /**
    * Determines if an object is likely a resolver definition. A resolver definition will have two properties:
