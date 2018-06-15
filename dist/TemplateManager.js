@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.TemplateManager = {})));
-}(this, (function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('flat')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'flat'], factory) :
+  (factory((global.TemplateManager = {}),global.flat));
+}(this, (function (exports,flat) { 'use strict';
 
   var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
     return typeof obj;
@@ -18,7 +18,7 @@
 
   // [Common] Build User: User
   // [Common] Version:    2.0.0
-  // [Common] Build Date: Tue Jun 12 2018 22:41:33 GMT-0400 (Eastern Daylight Time)
+  // [Common] Build Date: Thu Jun 14 2018 21:26:46 GMT-0400 (Eastern Daylight Time)
 
   /**
    * Determines if an object is likely a resolver definition. A resolver definition will have two properties:
@@ -57,6 +57,55 @@
               callback(collection[propertyName], propertyName);
           });
       }
+  };
+
+  /**
+   * Checks to see if a value is a function.
+   *
+   * @param {*} value the value to check to see if it is a function
+   * @returns {boolean} true, if the value is a function; false otherwise
+   */
+  CommonUtil.isFunction = function (value) {
+      return 'function' === typeof value;
+  };
+
+  /**
+   * Flattens an object. The object will be one level deep, with each element separated
+   * by periods. For example, flattening:
+   *  {
+   *      person: {
+   *          firstName: 'Clark',
+   *          lastName: 'Kent'
+   *      }
+   *  }
+   *
+   * Will produce:
+   *  {
+   *      person.firstName: 'Clark',
+   *      person.lastName: 'Kent'
+   *  }
+   *
+   * Arrays are specified with dot-numeric notation:
+   *
+   * {
+   *      colors: ['red', 'green', 'blue']
+   * }
+   *
+   * Will produce:
+   * {
+   *      colors.0: 'red',
+   *      colors.1: 'green',
+   *      colors.2: 'blue'
+   * }
+   *
+   * This is useful for using resolvers with embedded objects.
+   *
+   * @param {Object} map the map to flatten
+   * @returns {Object} the flattened object
+   */
+  CommonUtil.flattenMap = function (map) {
+      // Strinify/parse the map to remove functions
+      return flat.flatten(JSON.parse(JSON.stringify(map)));
   };
 
   /**
@@ -199,7 +248,7 @@
    * @return {string} a resolved value
    */
   var normalizeValue = function normalizeValue(value, pattern) {
-      if ('function' === typeof value) {
+      if (CommonUtil.isFunction(value)) {
           return normalizeValue(value(pattern));
       } else {
           return value;
@@ -233,7 +282,7 @@
               replacement = void 0;
 
           // We allow functions for the replacement!
-          if ('function' === typeof resolver.replacement) {
+          if (CommonUtil.isFunction(resolver.replacement)) {
               replacement = resolver.replacement(resolver.pattern, template, processedTemplateString);
           } else {
               replacement = resolver.replacement;
