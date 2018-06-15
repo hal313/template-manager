@@ -142,7 +142,7 @@ export class StringResolver {
             }
 
             // Populate the default resolvers
-            if (_defaultResolverMap) {
+            if (!!_defaultResolverMap.length) {
                 CommonUtil.forEach(_defaultResolverMap, (resolver) => {
                     internalResolverMap.push(resolver);
                 });
