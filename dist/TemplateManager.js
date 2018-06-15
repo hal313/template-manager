@@ -18,7 +18,7 @@
 
   // [Common] Build User: User
   // [Common] Version:    2.0.0
-  // [Common] Build Date: Thu Jun 14 2018 23:55:45 GMT-0400 (Eastern Daylight Time)
+  // [Common] Build Date: Fri Jun 15 2018 00:07:40 GMT-0400 (Eastern Daylight Time)
 
   /**
    * Determines if an object is likely a resolver definition. A resolver definition will have two properties:
@@ -308,12 +308,8 @@
   var resolveTemplate = function resolveTemplate(template, resolverMap, options) {
       var processedTemplateString = template;
 
-      // console.log('MAP', CommonUtil.flattenMap(resolverMap));
-      // console.log('MAP', JSON.stringify(resolverMap));
       CommonUtil.forEach(resolverMap, function (resolver) {
-          // CommonUtil.forEach(CommonUtil.flattenMap(resolverMap), (resolver) => {
 
-          // console.log('resolver', resolver.pattern, resolver.replacement);
           var regex = getRegex(resolver.pattern),
               replacement = void 0;
 
@@ -421,7 +417,6 @@
 
           // Populate the resolver map
           if (!!resolverMap) {
-              // console.log('RESOLVER MAP', resolverMap);
               CommonUtil.forEach(CommonUtil.normalizeResolverDefinitions(resolverMap), function (resolver) {
                   internalResolverMap.push(resolver);
               });
@@ -429,7 +424,6 @@
           // Only process if there are resolvers!
           if (internalResolverMap.length) {
               // Loop through until no more resolutions take place
-              // console.log('MAP', internalResolverMap);
               while (processedTemplateString !== (processedLoopResult = resolveTemplate(processedTemplateString, internalResolverMap, _options))) {
                   processedTemplateString = processedLoopResult;
               }
