@@ -1,6 +1,6 @@
 {
   "name": "template-manager",
-  "version": "2.0.1",
+  "version": "2.1.2",
   "description": "A JavaScript library to manage templates",
   "homepage": "https://github.com/hal313/template-manager",
   "bugs": {
