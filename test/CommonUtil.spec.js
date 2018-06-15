@@ -155,6 +155,45 @@ import { CommonUtil } from '../src/CommonUtil';
 
             });
 
+            describe('isFunction', () => {
+
+                test('should return true when a function is passed in', () => {
+                    expect(CommonUtil.isFunction(() => {})).toBeTruthy();
+                });
+
+                test('should return false when undefined is passed in', () => {
+                    expect(CommonUtil.isFunction(undefined)).toBeFalsy();
+                });
+
+                test('should return false when null is passed in', () => {
+                    expect(CommonUtil.isFunction(null)).toBeFalsy();
+                });
+
+                test('should return false when the empty string is passed in', () => {
+                    expect(CommonUtil.isFunction('')).toBeFalsy();
+                });
+
+                test('should return false when 0 is passed in', () => {
+                    expect(CommonUtil.isFunction(0)).toBeFalsy();
+                });
+
+                test('should return false when a string is passed in', () => {
+                    expect(CommonUtil.isFunction('some string')).toBeFalsy();
+                });
+
+                test('should return false when a number is passed in', () => {
+                    expect(CommonUtil.isFunction(123)).toBeFalsy();
+                });
+
+                test('should return false when a boolean is passed in', () => {
+                    expect(CommonUtil.isFunction(true)).toBeFalsy();
+                });
+
+                test('should return false when a boolean is passed in', () => {
+                    expect(CommonUtil.isFunction(false)).toBeFalsy();
+                });
+            });
+
             describe('createResolverDefinition()', () => {
 
                 test('should create a resolver definition object', () => {
@@ -195,6 +234,82 @@ import { CommonUtil } from '../src/CommonUtil';
 
             });
 
+            describe('flattenMap', () => {
+
+                describe('Simple Map', () => {
+
+                    var map = {
+                        firstLevelString: 'first',
+                        firstLevelNumber: 1,
+                        firstLevelBoolean: true,
+                        firstLevelArray: ['one', 2, true],
+                    };
+
+                    it('should flatten an object', () => {
+                        expect(CommonUtil.flattenMap(map)).toEqual({
+                            ['firstLevelString']: 'first',
+                            ['firstLevelNumber']: 1,
+                            ['firstLevelBoolean']: true,
+                            ['firstLevelArray.0']: 'one',
+                            ['firstLevelArray.1']: 2,
+                            ['firstLevelArray.2']: true
+                        });
+                    });
+
+                    it('should remove functions when flattening', () => {
+                        expect(CommonUtil.flattenMap({fn: ()=>{}})).toEqual({});
+                    });
+
+                });
+
+                describe('Complex Map', () => {
+
+                    var map = {
+                        firstLevelString: 'first',
+                        firstLevelNumber: 1,
+                        firstLevelBoolean: true,
+                        firstLevelArray: ['one', 2, true],
+                        firstLevelObject: {
+                            secondLevelString: 'second',
+                            secondLevelNumber: 2,
+                            secondLevelBoolean: true,
+                            secondLevelArray: ['two', 3, true],
+                            secondLevelObject: {
+                                thirdLevelString: 'third',
+                                thirdLevelNumber: 3,
+                                thirdLevelBoolean: true,
+                                thirdLevelArray: ['three', 4, true, {arrayKey: 'arrayValue'}],
+                            }
+                        }
+                    };
+
+                    it('should flatten an object', () => {
+                        expect(CommonUtil.flattenMap(map)).toEqual({
+                            ['firstLevelString']: 'first',
+                            ['firstLevelNumber']: 1,
+                            ['firstLevelBoolean']: true,
+                            ['firstLevelArray.0']: 'one',
+                            ['firstLevelArray.1']: 2,
+                            ['firstLevelArray.2']: true,
+                            ['firstLevelObject.secondLevelString']: 'second',
+                            ['firstLevelObject.secondLevelNumber']: 2,
+                            ['firstLevelObject.secondLevelBoolean']: true,
+                            ['firstLevelObject.secondLevelArray.0']: 'two',
+                            ['firstLevelObject.secondLevelArray.1']: 3,
+                            ['firstLevelObject.secondLevelArray.2']: true,
+                            ['firstLevelObject.secondLevelObject.thirdLevelString']: 'third',
+                            ['firstLevelObject.secondLevelObject.thirdLevelNumber']: 3,
+                            ['firstLevelObject.secondLevelObject.thirdLevelBoolean']: true,
+                            ['firstLevelObject.secondLevelObject.thirdLevelArray.0']: 'three',
+                            ['firstLevelObject.secondLevelObject.thirdLevelArray.1']: 4,
+                            ['firstLevelObject.secondLevelObject.thirdLevelArray.2']: true,
+                            ['firstLevelObject.secondLevelObject.thirdLevelArray.3.arrayKey']: 'arrayValue',
+                        });
+                    });
+
+                });
+
+            });
         });
 
     });

@@ -1,3 +1,5 @@
+import {flatten, unflatten} from 'flat';
+
 // [Common] Build User: ${build.user}
 // [Common] Version:    ${build.version}
 // [Common] Build Date: ${build.date}
@@ -39,6 +41,55 @@ CommonUtil.forEach = (collection, callback) => {
             callback(collection[propertyName], propertyName);
         });
     }
+};
+
+/**
+ * Checks to see if a value is a function.
+ *
+ * @param {*} value the value to check to see if it is a function
+ * @returns {boolean} true, if the value is a function; false otherwise
+ */
+CommonUtil.isFunction = (value) => {
+    return 'function' === typeof value;
+};
+
+/**
+ * Flattens an object. The object will be one level deep, with each element separated
+ * by periods. For example, flattening:
+ *  {
+ *      person: {
+ *          firstName: 'Clark',
+ *          lastName: 'Kent'
+ *      }
+ *  }
+ *
+ * Will produce:
+ *  {
+ *      person.firstName: 'Clark',
+ *      person.lastName: 'Kent'
+ *  }
+ *
+ * Arrays are specified with dot-numeric notation:
+ *
+ * {
+ *      colors: ['red', 'green', 'blue']
+ * }
+ *
+ * Will produce:
+ * {
+ *      colors.0: 'red',
+ *      colors.1: 'green',
+ *      colors.2: 'blue'
+ * }
+ *
+ * This is useful for using resolvers with embedded objects.
+ *
+ * @param {Object} map the map to flatten
+ * @returns {Object} the flattened object
+ */
+CommonUtil.flattenMap = (map) => {
+    // Strinify/parse the map to remove functions
+    return flatten(JSON.parse(JSON.stringify(map)));
 };
 
 /**
