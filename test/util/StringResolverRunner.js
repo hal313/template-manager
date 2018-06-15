@@ -35,21 +35,6 @@ module.exports = function() {
 
                         describe('Basic Functionality', () => {
 
-                            describe('Caching', () => {
-                                let template = 'this is ${resolved}',
-                                    resolved = 'this is resolved',
-                                    resolverMap = {resolved: 'resolved'};
-
-                                test('should resolve correctly when cached', () => {
-                                    expect(new StringResolver(null, {cacheRegex: true}).resolve(template, resolverMap)).toEqual(resolved);
-                                });
-
-                                test('should resolve correctly when not cached', () => {
-                                    expect(new StringResolver(null, {cacheRegex: false}).resolve(template, resolverMap)).toEqual(resolved);
-                                });
-
-                            });
-
                             test('should return undefined when undefined is passed in', () => {
                                 expect(stringResolver.resolve(undefined, [])).toBe(undefined);
                                 expect(stringResolver.resolve(undefined)).toBe(undefined);
@@ -166,6 +151,19 @@ module.exports = function() {
                                     template = 'this is ${resolverOne}',
                                     resolved = 'this is resolved';
                                 expect(stringResolver.resolve(template, resolverMap)).toEqual(resolved);
+                            });
+
+                        });
+
+                        describe('Default Resolver Map', () => {
+
+                            test('should resolve using the default resolver map', () => {
+                                let defaultResolverMap = {
+                                    resolver: 'resolved'
+                                };
+                                let template = 'this is ${resolver}';
+                                stringResolver = new StringResolver(defaultResolverMap);
+                                expect(stringResolver.resolve(template)).toEqual('this is resolved');
                             });
 
                         });
@@ -305,6 +303,54 @@ module.exports = function() {
                                     expect(new StringResolver(defaultResolverMap).resolve(template)).toBe(resolved);
                                 });
 
+                            });
+
+                        });
+
+                        describe('Nested Resolvers', () => {
+
+                            let nestedObject = {
+                                person: {
+                                    name: {
+                                        first: 'Bruce',
+                                        last: 'Wayne'
+                                    }
+                                }
+                            };
+
+                            test('should resolve a nested object', () => {
+                                expect(stringResolver.resolve('Welcome, ${person.name.first} ${person.name.last}!', nestedObject)).toEqual('Welcome, Bruce Wayne!');
+                            });
+
+                            test('should resolve a nested object with arrays', () => {
+                                let superheros = {
+                                    superheros: [nestedObject]
+                                };
+                                expect(stringResolver.resolve('Welcome, ${superheros.0.person.name.first} ${superheros.0.person.name.last}!', superheros)).toEqual('Welcome, Bruce Wayne!');
+                            });
+
+                            test('should resolve a deeply nested object', () => {
+                                let map = {
+                                    a: {
+                                        b: {
+                                            c: 'see'
+                                        }
+                                    }
+                                };
+                                expect(stringResolver.resolve('${a.b.c}', map)).toEqual('see');
+                                expect(stringResolver.resolve('${a.b.d}', map)).toEqual('${a.b.d}');
+                            });
+
+                            test('should resolve a deeply nested object with arrays', () => {
+                                let map = {
+                                    a: [{
+                                        b: [{
+                                            c: ['see']
+                                        }]
+                                    }]
+                                };
+                                expect(stringResolver.resolve('${a.0.b.0.c.0}', map)).toEqual('see');
+                                expect(stringResolver.resolve('${a.0.b.0.c.1}', map)).toEqual('${a.0.b.0.c.1}');
                             });
 
                         });

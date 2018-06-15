@@ -114,17 +114,16 @@ export class TemplateManager {
 
                     if (defaultResolverMap) {
                         CommonUtil.forEach(defaultResolverMap, function onResolver(resolver, index) {
-                            _resolverMap.push(CommonUtil.normalizeResolverDefinition(resolver, index));
+                            _resolverMap = _resolverMap.concat(CommonUtil.normalizeResolverDefinition(resolver, index));
                         });
                     }
 
                     // Populate the resolver map
                     if (resolverMap) {
                         CommonUtil.forEach(resolverMap, function onResolver(resolver, index) {
-                            _resolverMap.push(CommonUtil.normalizeResolverDefinition(resolver, index));
+                            _resolverMap = _resolverMap.concat(CommonUtil.normalizeResolverDefinition(resolver, index));
                         });
                     }
-
                     return new StringResolver().resolve(template, _resolverMap);
                 },
                 /**

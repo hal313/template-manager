@@ -119,7 +119,6 @@ module.exports = function() {
                                 </script >`
                                 ;
                             expect(new TemplateManager().load).toThrow();
-
                         });
 
                         test('should load scripts from the HTML page', () => {
@@ -134,6 +133,37 @@ module.exports = function() {
 
                             templateManager.load();
                             expect(templateManager.get(embeddedTemplateName).raw()).toBe(embeddedTemplateContent);
+                        });
+
+                        test('should not load scripts from the HTML page which do not have the correct type', () => {
+                            let embeddedTemplateName = 'test-template';
+                            let embeddedTemplateContent = 'This is a template';
+
+                            document.body.innerHTML = `
+                                <script type="text/x-INCORRECT-template-manager" data-name="${embeddedTemplateName}">
+                                    ${embeddedTemplateContent}
+                                </script >`
+                            ;
+
+                            templateManager.load();
+
+                            expect(templateManager.getTemplateNames().length).toEqual(0);
+                        });
+
+                        test('should load scripts from the HTML page with a custom correct type', () => {
+                            let embeddedTemplateName = 'test-template';
+                            let embeddedTemplateContent = 'This is a template';
+
+                            document.body.innerHTML = `
+                                <script type="text/x-custom-template-manager" data-name="${embeddedTemplateName}">
+                                    ${embeddedTemplateContent}
+                                </script >`
+                            ;
+
+                            templateManager = new TemplateManager({}, {scriptType: 'text/x-custom-template-manager'});
+                            templateManager.load();
+
+                            expect(templateManager.getTemplateNames().length).toEqual(1);
                         });
 
                     });

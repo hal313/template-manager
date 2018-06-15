@@ -155,10 +155,148 @@ import { CommonUtil } from '../src/CommonUtil';
 
             });
 
+            describe('isFunction', () => {
+
+                test('should return true when a function is passed in', () => {
+                    expect(CommonUtil.isFunction(() => {})).toBeTruthy();
+                });
+
+                test('should return false when undefined is passed in', () => {
+                    expect(CommonUtil.isFunction(undefined)).toBeFalsy();
+                });
+
+                test('should return false when null is passed in', () => {
+                    expect(CommonUtil.isFunction(null)).toBeFalsy();
+                });
+
+                test('should return false when the empty string is passed in', () => {
+                    expect(CommonUtil.isFunction('')).toBeFalsy();
+                });
+
+                test('should return false when 0 is passed in', () => {
+                    expect(CommonUtil.isFunction(0)).toBeFalsy();
+                });
+
+                test('should return false when a string is passed in', () => {
+                    expect(CommonUtil.isFunction('some string')).toBeFalsy();
+                });
+
+                test('should return false when a number is passed in', () => {
+                    expect(CommonUtil.isFunction(123)).toBeFalsy();
+                });
+
+                test('should return false when a boolean is passed in', () => {
+                    expect(CommonUtil.isFunction(true)).toBeFalsy();
+                });
+
+                test('should return false when a boolean is passed in', () => {
+                    expect(CommonUtil.isFunction(false)).toBeFalsy();
+                });
+            });
+
+            describe('isObject', () => {
+
+                test('should return true when an object is passed in', () => {
+                    expect(CommonUtil.isObject({})).toBeTruthy();
+                });
+
+                test('should return false when undefined is passed in', () => {
+                    expect(CommonUtil.isObject(undefined)).toBeFalsy();
+                });
+
+                test('should return false when null is passed in', () => {
+                    expect(CommonUtil.isObject(null)).toBeFalsy();
+                });
+
+                test('should return false when the empty string is passed in', () => {
+                    expect(CommonUtil.isObject('')).toBeFalsy();
+                });
+
+                test('should return false when 0 is passed in', () => {
+                    expect(CommonUtil.isObject(0)).toBeFalsy();
+                });
+
+                test('should return false when an array is passed in', () => {
+                    expect(CommonUtil.isObject([])).toBeFalsy();
+                });
+
+                test('should return false when a string is passed in', () => {
+                    expect(CommonUtil.isObject('some string')).toBeFalsy();
+                });
+
+                test('should return false when a number is passed in', () => {
+                    expect(CommonUtil.isObject(123)).toBeFalsy();
+                });
+
+                test('should return false when a boolean is passed in', () => {
+                    expect(CommonUtil.isObject(true)).toBeFalsy();
+                });
+
+                test('should return false when a boolean is passed in', () => {
+                    expect(CommonUtil.isObject(false)).toBeFalsy();
+                });
+            });
+
+            describe('isArray', () => {
+
+                test('should return false when an array is passed in', () => {
+                    expect(CommonUtil.isArray([])).toBeTruthy();
+                });
+
+                test('should return true when an object is passed in', () => {
+                    expect(CommonUtil.isArray({})).toBeFalsy();
+                });
+
+                test('should return false when undefined is passed in', () => {
+                    expect(CommonUtil.isArray(undefined)).toBeFalsy();
+                });
+
+                test('should return false when null is passed in', () => {
+                    expect(CommonUtil.isArray(null)).toBeFalsy();
+                });
+
+                test('should return false when the empty string is passed in', () => {
+                    expect(CommonUtil.isArray('')).toBeFalsy();
+                });
+
+                test('should return false when 0 is passed in', () => {
+                    expect(CommonUtil.isArray(0)).toBeFalsy();
+                });
+
+                test('should return false when a string is passed in', () => {
+                    expect(CommonUtil.isArray('some string')).toBeFalsy();
+                });
+
+                test('should return false when a number is passed in', () => {
+                    expect(CommonUtil.isArray(123)).toBeFalsy();
+                });
+
+                test('should return false when a boolean is passed in', () => {
+                    expect(CommonUtil.isArray(true)).toBeFalsy();
+                });
+
+                test('should return false when a boolean is passed in', () => {
+                    expect(CommonUtil.isArray(false)).toBeFalsy();
+                });
+
+            });
+
             describe('createResolverDefinition()', () => {
 
                 test('should create a resolver definition object', () => {
-                    expect(CommonUtil.createResolverDefinition('a', 'b')).toEqual({pattern: 'a', replacement: 'b'});
+                    expect(CommonUtil.createResolverDefinition('a', 'b')).toEqual([{pattern: 'a', replacement: 'b'}]);
+                });
+
+                test('should create a resolver definition object while flattening', () => {
+                    expect(CommonUtil.createResolverDefinition('superhero', {name: 'Batman'})).toEqual([{pattern: 'superhero.name', replacement: 'Batman'}]);
+                });
+
+                test('should create a resolver definition object while flattening', () => {
+                    expect(CommonUtil.createResolverDefinition('superhero', {name: 'Batman', humanName: 'Bruce Wayne'}))
+                        .toEqual([
+                            {pattern: 'superhero.name', replacement: 'Batman'},
+                            {pattern: 'superhero.humanName', replacement: 'Bruce Wayne'}
+                        ]);
                 });
 
                 test('should throw when the pattern is undefined', () => {
@@ -186,15 +324,107 @@ import { CommonUtil } from '../src/CommonUtil';
             describe('normalizeResolverDefinition()', () => {
 
                 test('should create a resolver definition from an object with a pattern and a replacement', () => {
-                    expect(CommonUtil.normalizeResolverDefinition({pattern: 'a', replacement: 'b'})).toEqual({pattern: 'a', replacement: 'b'});
+                    expect(CommonUtil.normalizeResolverDefinition({pattern: 'a', replacement: 'b'})).toEqual([{pattern: 'a', replacement: 'b'}]);
                 });
 
                 test('should create a resolver definition from a keyed object', () => {
-                    expect(CommonUtil.normalizeResolverDefinition('a', 'b')).toEqual({pattern: 'a', replacement: 'b'});
+                    expect(CommonUtil.normalizeResolverDefinition('a', 'b')).toEqual([{pattern: 'a', replacement: 'b'}]);
                 });
 
             });
 
+            describe('normalizeResolverDefinitions()', () => {
+
+                test('should create a resolver definition from an object with a pattern and a replacement', () => {
+                    expect(CommonUtil.normalizeResolverDefinitions([{pattern: 'a', replacement: 'b'}])).toEqual([{pattern: 'a', replacement: 'b'}]);
+                });
+
+                test('should throw when passed an array of non-resolver definitions', () => {
+                    expect(() => CommonUtil.normalizeResolverDefinitions([{a: 'b'}])).toThrow();
+                });
+
+                test('should return an empty array when there are no resolver definitions', () => {
+                    expect(CommonUtil.normalizeResolverDefinitions(undefined)).toEqual([]);
+                });
+
+            });
+
+            describe('flattenMap', () => {
+
+                describe('Simple Map', () => {
+
+                    let map = {
+                        firstLevelString: 'first',
+                        firstLevelNumber: 1,
+                        firstLevelBoolean: true,
+                        firstLevelArray: ['one', 2, true],
+                    };
+
+                    test('should flatten an object', () => {
+                        expect(CommonUtil.flattenMap(map)).toEqual({
+                            ['firstLevelString']: 'first',
+                            ['firstLevelNumber']: 1,
+                            ['firstLevelBoolean']: true,
+                            ['firstLevelArray.0']: 'one',
+                            ['firstLevelArray.1']: 2,
+                            ['firstLevelArray.2']: true
+                        });
+                    });
+
+                    test('should remove functions when flattening', () => {
+                        expect(CommonUtil.flattenMap({fn: ()=>{}})).toEqual({});
+                    });
+
+                });
+
+                describe('Complex Map', () => {
+
+                    let map = {
+                        firstLevelString: 'first',
+                        firstLevelNumber: 1,
+                        firstLevelBoolean: true,
+                        firstLevelArray: ['one', 2, true],
+                        firstLevelObject: {
+                            secondLevelString: 'second',
+                            secondLevelNumber: 2,
+                            secondLevelBoolean: true,
+                            secondLevelArray: ['two', 3, true],
+                            secondLevelObject: {
+                                thirdLevelString: 'third',
+                                thirdLevelNumber: 3,
+                                thirdLevelBoolean: true,
+                                thirdLevelArray: ['three', 4, true, {arrayKey: 'arrayValue'}],
+                            }
+                        }
+                    };
+
+                    test('should flatten an object', () => {
+                        expect(CommonUtil.flattenMap(map)).toEqual({
+                            ['firstLevelString']: 'first',
+                            ['firstLevelNumber']: 1,
+                            ['firstLevelBoolean']: true,
+                            ['firstLevelArray.0']: 'one',
+                            ['firstLevelArray.1']: 2,
+                            ['firstLevelArray.2']: true,
+                            ['firstLevelObject.secondLevelString']: 'second',
+                            ['firstLevelObject.secondLevelNumber']: 2,
+                            ['firstLevelObject.secondLevelBoolean']: true,
+                            ['firstLevelObject.secondLevelArray.0']: 'two',
+                            ['firstLevelObject.secondLevelArray.1']: 3,
+                            ['firstLevelObject.secondLevelArray.2']: true,
+                            ['firstLevelObject.secondLevelObject.thirdLevelString']: 'third',
+                            ['firstLevelObject.secondLevelObject.thirdLevelNumber']: 3,
+                            ['firstLevelObject.secondLevelObject.thirdLevelBoolean']: true,
+                            ['firstLevelObject.secondLevelObject.thirdLevelArray.0']: 'three',
+                            ['firstLevelObject.secondLevelObject.thirdLevelArray.1']: 4,
+                            ['firstLevelObject.secondLevelObject.thirdLevelArray.2']: true,
+                            ['firstLevelObject.secondLevelObject.thirdLevelArray.3.arrayKey']: 'arrayValue',
+                        });
+                    });
+
+                });
+
+            });
         });
 
     });

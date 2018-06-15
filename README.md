@@ -64,8 +64,22 @@ var resolverMap = {
 },
     template = 'simple: ${someResolver} and functional: ${someFunction}';
 
-new StringResolver(template, resolverMap); // "simple: this is a simple resolver and functional: this is a functional resolver"
+new StringResolver(template, resolverMap);
+/* => "simple: this is a simple resolver and functional: this is a functional resolver" */
 ```
+**NOTE** It is possible to pass in an object map in order to support object traversal. For example:
+```
+var resolverMap = {
+        a: {
+            b: {
+                c: 'see'
+            }
+        }
+    },
+    template = '${a.b.c}'; /* => "see" */
+```
+Functions are dropped during object traversal.
+
 #### TemplateManager
 > new TemplateManager(defaultResolverMap={}[, options])
 

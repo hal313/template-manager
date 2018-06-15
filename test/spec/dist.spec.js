@@ -1,5 +1,4 @@
 (() => {
-    'use strict';
 
     var Module = require('../../dist/TemplateManager'),
         StringResolverRunner = require('./../util/StringResolverRunner'),

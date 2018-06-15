@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.TemplateManager = {})));
-}(this, (function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('flat')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'flat'], factory) :
+  (factory((global.TemplateManager = {}),global.flat));
+}(this, (function (exports,flat) { 'use strict';
 
   var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
     return typeof obj;
@@ -17,8 +17,8 @@
   };
 
   // [Common] Build User: User
-  // [Common] Version:    2.0.0
-  // [Common] Build Date: Tue Jun 12 2018 22:41:33 GMT-0400 (Eastern Daylight Time)
+  // [Common] Version:    2.0.1
+  // [Common] Build Date: Fri Jun 15 2018 00:09:17 GMT-0400 (Eastern Daylight Time)
 
   /**
    * Determines if an object is likely a resolver definition. A resolver definition will have two properties:
@@ -60,6 +60,45 @@
   };
 
   /**
+   * Flattens an object. The object will be one level deep, with each element separated
+   * by periods. For example, flattening:
+   *  {
+   *      person: {
+   *          firstName: 'Clark',
+   *          lastName: 'Kent'
+   *      }
+   *  }
+   *
+   * Will produce:
+   *  {
+   *      person.firstName: 'Clark',
+   *      person.lastName: 'Kent'
+   *  }
+   *
+   * Arrays are specified with dot-numeric notation:
+   *
+   * {
+   *      colors: ['red', 'green', 'blue']
+   * }
+   *
+   * Will produce:
+   * {
+   *      colors.0: 'red',
+   *      colors.1: 'green',
+   *      colors.2: 'blue'
+   * }
+   *
+   * This is useful for using resolvers with embedded objects.
+   *
+   * @param {Object} map the map to flatten
+   * @returns {Object} the flattened object
+   */
+  CommonUtil.flattenMap = function (map) {
+      // Strinify/parse the map to remove functions
+      return flat.flatten(JSON.parse(JSON.stringify(map)));
+  };
+
+  /**
    * Merges objects from right to left, where the left-most item takes precedence over the right-most item.
    *
    * @param {Object[]} objects
@@ -71,18 +110,14 @@
       }
 
       var mergedObject = {};
-      var sources = void 0;
+      var sources = Array.prototype.slice.call(objects);
       var source = void 0;
 
-      if (!!objects) {
-          sources = Array.prototype.slice.call(objects);
-
-          for (var i = 0; i < sources.length; i++) {
-              source = sources[i];
-              if (!!source) {
-                  for (var attributeName in source) {
-                      mergedObject[attributeName] = source[attributeName];
-                  }
+      for (var i = 0; i < sources.length; i++) {
+          source = sources[i];
+          if (!!source) {
+              for (var attributeName in source) {
+                  mergedObject[attributeName] = source[attributeName];
               }
           }
       }
@@ -114,6 +149,36 @@
   };
 
   /**
+   * Checks to see if a value is a function.
+   *
+   * @param {*} value the value to check to see if it is a function
+   * @returns {boolean} true, if the value is a function; false otherwise
+   */
+  CommonUtil.isFunction = function (value) {
+      return 'function' === typeof value;
+  };
+
+  /**
+   * Checks to see if a value is an array.
+   *
+   * @param {*} value the value to check to see if it is an array
+   * @returns {boolean} true, if the value is an array; false otherwise
+   */
+  CommonUtil.isArray = function (value) {
+      return Array.isArray(value);
+  };
+
+  /**
+   * Checks to see if a value is an object (not an array).
+   *
+   * @param {*} value the value to check to see if it is an object
+   * @returns {boolean} true, if the value is an object; false otherwise
+   */
+  CommonUtil.isObject = function (value) {
+      return CommonUtil.isDefined(value) && !CommonUtil.isArray(value) && 'object' === (typeof value === 'undefined' ? 'undefined' : _typeof(value));
+  };
+
+  /**
    * Creates a valid resolver definition. A resolver defintion looks like:
    * {
    *   pattern: <string>,
@@ -121,8 +186,8 @@
    * }
    *
    * @param {string} pattern the pattern to use for the resolver definition
-   * @param {string|function} replacement a replacement for the resolver function
-   * @return {Object} a resolver definition, which contains both a "pattern" as well as a "replacement" member
+   * @param {string|function|object} replacement a replacement for the resolver function
+   * @return {Object[]} an array of resolver definitions, which each contain both a "pattern" as well as a "replacement" member
    */
   CommonUtil.createResolverDefinition = function (pattern, replacement) {
       if ('string' !== typeof pattern) {
@@ -138,10 +203,26 @@
           //
           throw new Error('\'pattern\' must be a string, not \'' + (typeof pattern === 'undefined' ? 'undefined' : _typeof(pattern)) + '\' (\'' + pattern + '\'); this error may occur if using an incomplete classic resolver definition - be sure all classic resolver definitions have both a \'pattern\' and \'replacement\'.');
       }
-      return {
-          pattern: pattern,
-          replacement: replacement
-      };
+
+      if (CommonUtil.isArray(replacement) || CommonUtil.isObject(replacement)) {
+          var results = [];
+          var map = {};
+          map[pattern] = replacement;
+
+          CommonUtil.forEach(CommonUtil.flattenMap(map), function (value, name) {
+              results.push({
+                  pattern: name,
+                  replacement: value
+              });
+          });
+
+          return results;
+      } else {
+          return [{
+              pattern: pattern,
+              replacement: replacement
+          }];
+      }
   };
 
   /**
@@ -149,7 +230,7 @@
    *
    * @param {Object|string} definitionOrPattern a resolver definition or a string
    * @param {string|function} replacement the replacement value (or function)
-   * @return {Object} a resolver definition, which contains both a "pattern" as well as a "replacement" member
+   * @return {Object[]} an array of resolver definitions, which each contain both a "pattern" as well as a "replacement" member
    */
   CommonUtil.normalizeResolverDefinition = function (definitionOrPattern, replacement) {
       if (isResolverDefinition(definitionOrPattern)) {
@@ -173,9 +254,9 @@
       if (!!definitions) {
           CommonUtil.forEach(definitions, function (definitionOrReplacement, indexOrPattern) {
               if (isResolverDefinition(definitionOrReplacement)) {
-                  resolverDefinitions.push(CommonUtil.normalizeResolverDefinition(definitionOrReplacement));
+                  resolverDefinitions = resolverDefinitions.concat(CommonUtil.normalizeResolverDefinition(definitionOrReplacement, undefined));
               } else {
-                  resolverDefinitions.push(CommonUtil.normalizeResolverDefinition(indexOrPattern, definitionOrReplacement));
+                  resolverDefinitions = resolverDefinitions.concat(CommonUtil.normalizeResolverDefinition(indexOrPattern, definitionOrReplacement));
               }
           });
       }
@@ -184,7 +265,7 @@
   };
 
   // Burn in the version
-  CommonUtil.version = '2.0.0';
+  CommonUtil.version = '2.0.1';
 
   // [StringResolver] Build User: User
 
@@ -199,7 +280,7 @@
    * @return {string} a resolved value
    */
   var normalizeValue = function normalizeValue(value, pattern) {
-      if ('function' === typeof value) {
+      if (CommonUtil.isFunction(value)) {
           return normalizeValue(value(pattern));
       } else {
           return value;
@@ -233,7 +314,7 @@
               replacement = void 0;
 
           // We allow functions for the replacement!
-          if ('function' === typeof resolver.replacement) {
+          if (CommonUtil.isFunction(resolver.replacement)) {
               replacement = resolver.replacement(resolver.pattern, template, processedTemplateString);
           } else {
               replacement = resolver.replacement;
@@ -328,7 +409,7 @@
           }
 
           // Populate the default resolvers
-          if (_defaultResolverMap) {
+          if (!!_defaultResolverMap.length) {
               CommonUtil.forEach(_defaultResolverMap, function (resolver) {
                   internalResolverMap.push(resolver);
               });
@@ -364,7 +445,7 @@
   };
 
   // Burn in the version
-  StringResolver.version = '2.0.0';
+  StringResolver.version = '2.0.1';
 
   // [TemplateManager] Build User: User
 
@@ -481,17 +562,16 @@
 
                   if (defaultResolverMap) {
                       CommonUtil.forEach(defaultResolverMap, function onResolver(resolver, index) {
-                          _resolverMap.push(CommonUtil.normalizeResolverDefinition(resolver, index));
+                          _resolverMap = _resolverMap.concat(CommonUtil.normalizeResolverDefinition(resolver, index));
                       });
                   }
 
                   // Populate the resolver map
                   if (resolverMap) {
                       CommonUtil.forEach(resolverMap, function onResolver(resolver, index) {
-                          _resolverMap.push(CommonUtil.normalizeResolverDefinition(resolver, index));
+                          _resolverMap = _resolverMap.concat(CommonUtil.normalizeResolverDefinition(resolver, index));
                       });
                   }
-
                   return new StringResolver().resolve(template, _resolverMap);
               },
               /**
@@ -598,7 +678,7 @@
   };
 
   // Place the version as a member in the function
-  TemplateManager.version = '2.0.0';
+  TemplateManager.version = '2.0.1';
 
   // [Module] Build User: User
 
