@@ -170,7 +170,6 @@ CommonUtil.isObject = (value) => {
  * @return {Object[]} an array of resolver definitions, which each contain both a "pattern" as well as a "replacement" member
  */
 CommonUtil.createResolverDefinition = (pattern, replacement) => {
-    // console.log('createResolverDefinition', 'pattern=', pattern, 'replacement=', replacement);
     if ('string' !== typeof pattern) {
         // If a classic definition is used but is incorrectly specified, this is what happens:
         // resolve(template, [{pattern: 'somePattern', replacement_spelled_wrong: 'someValue'}]);
@@ -218,7 +217,6 @@ CommonUtil.createResolverDefinition = (pattern, replacement) => {
  * @return {Object[]} an array of resolver definitions, which each contain both a "pattern" as well as a "replacement" member
  */
 CommonUtil.normalizeResolverDefinition = (definitionOrPattern, replacement) => {
-    // console.log('!!!!!normalizeResolverDefinition!!!!!', 'definitionOrPattern=', definitionOrPattern, 'replacement=', replacement);
     if (isResolverDefinition(definitionOrPattern)) {
         // Duck type for 'classic' resolvers
         return CommonUtil.createResolverDefinition(definitionOrPattern.pattern, definitionOrPattern.replacement);
@@ -236,22 +234,17 @@ CommonUtil.normalizeResolverDefinition = (definitionOrPattern, replacement) => {
  */
 CommonUtil.normalizeResolverDefinitions = (definitions) => {
     let resolverDefinitions = [];
-    // console.log('!!!!!normalizeResolverDefinitions!!!!!', !!definitions);
 
     if (!!definitions) {
         CommonUtil.forEach(definitions, (definitionOrReplacement, indexOrPattern) => {
             if (isResolverDefinition(definitionOrReplacement)) {
                 resolverDefinitions = resolverDefinitions.concat(CommonUtil.normalizeResolverDefinition(definitionOrReplacement, undefined));
             } else {
-                // console.log('', 'definitionOrReplacement=', definitionOrReplacement, 'indexOrPattern=', indexOrPattern);
                 resolverDefinitions = resolverDefinitions.concat(CommonUtil.normalizeResolverDefinition(indexOrPattern, definitionOrReplacement));
             }
         });
     }
 
-    // console.log('normalizeResolverDefinitions', definitions, resolverDefinitions);
-
-    // console.log('normalizeResolverDefinitions', definitions, resolverDefinitions);
     return resolverDefinitions;
 };
 
