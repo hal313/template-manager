@@ -157,7 +157,7 @@ npm run test:watch
 This is a basic script which can be used to build and deploy (to NPM) the project.
 
 ```
-export VERSION=0.0.16
+export VERSION=<NEXT VERSION>
 git checkout -b release/$VERSION
 npm version --no-git-tag-version patch
 npm run build
