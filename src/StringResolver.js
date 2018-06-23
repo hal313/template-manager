@@ -4,14 +4,15 @@
 
 import { CommonUtil } from './CommonUtil';
 
+
 /**
  * Normalizes a value. If the value is a function, execute the function and return the value. Otherwise, return the value.
  *
  * If "value" is a function, it will be executed recursively until a non-function is returned. The "value" function will be passed
  * the "pattern" value during execution.
  *
- * @param {Function|string} value the value to normalize
- * @param {string} pattern the pattern to resolve to
+ * @param {string|function} value the value to normalize
+ * @param {string|function} [pattern] the pattern to resolve to
  * @return {string} a resolved value
  */
 let normalizeValue = (value, pattern) => {
@@ -111,7 +112,7 @@ export class StringResolver {
     /**
      * Constructor for the StringResolver.
      *
-     * @param {Object} defaultResolverMap the default resolver map, can be undefined
+     * @param {Object} [defaultResolverMap] the default resolver map, can be undefined
      * @param {Object} [options] Optional options for resolving
      */
     constructor(defaultResolverMap, options) {
