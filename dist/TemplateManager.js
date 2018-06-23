@@ -17,8 +17,8 @@
   };
 
   // [Common] Build User: User
-  // [Common] Version:    2.1.4
-  // [Common] Build Date: Sun Jun 17 2018 22:49:40 GMT-0400 (Eastern Daylight Time)
+  // [Common] Version:    2.1.5
+  // [Common] Build Date: Sat Jun 23 2018 10:22:07 GMT-0400 (Eastern Daylight Time)
 
   /**
    * Determines if an object is likely a resolver definition. A resolver definition will have two properties:
@@ -265,7 +265,7 @@
   };
 
   // Burn in the version
-  CommonUtil.version = '2.1.4';
+  CommonUtil.version = '2.1.5';
 
   // [StringResolver] Build User: User
 
@@ -445,7 +445,7 @@
   };
 
   // Burn in the version
-  StringResolver.version = '2.1.4';
+  StringResolver.version = '2.1.5';
 
   // [TemplateManager] Build User: User
 
@@ -502,7 +502,7 @@
    *   scriptType: 'text/x-template-manager'
    * }
    *
-   * @param {Object} defaultResolverMap the default resolver map to use with all templates
+   * @param {Object} [defaultResolverMap] the default resolver map to use with all templates
    * @param {Object} [options] options for the TemplateManager instance
    */
   function TemplateManager(defaultResolverMap, options) {
@@ -678,7 +678,7 @@
   };
 
   // Place the version as a member in the function
-  TemplateManager.version = '2.1.4';
+  TemplateManager.version = '2.1.5';
 
   // [Module] Build User: User
 
