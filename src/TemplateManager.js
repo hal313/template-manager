@@ -58,7 +58,7 @@ export class TemplateManager {
      *   scriptType: 'text/x-template-manager'
      * }
      *
-     * @param {Object} defaultResolverMap the default resolver map to use with all templates
+     * @param {Object} [defaultResolverMap] the default resolver map to use with all templates
      * @param {Object} [options] options for the TemplateManager instance
      */
     constructor(defaultResolverMap, options) {
